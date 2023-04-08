@@ -1,0 +1,6 @@
+[submodule "flat_hash_map"]
+	path = flat_hash_map
+	url = https://github.com/skarupke/flat_hash_map
+[submodule "toolbelt"]
+	path = toolbelt
+	url = git@github.com:oschonrock/toolbelt.git
