@@ -11,3 +11,9 @@ _deps
 
 build
 datasets
+
+xfmparser/*.o
+xfmparser/*_wrap.cxx
+xfmparser/*_wrap.o 
+xfmparser/*.so
+xfmparser/*.py
