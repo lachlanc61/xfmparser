@@ -4,18 +4,15 @@
 #include <math.h>
   
 //our header file
-#include "gfg.h"
+#include "xfmcparser.h"
 #define ll long long
   
-double myvar = 3.4;
+double tdouble = 3.4;
   
-// calculate factorial
-ll int fact(ll int n)
+// return first byte
+char getbyte(const char* data, int len)
 {
-    if(n <= 1)
-        return 1;
-    else
-        return (n * fact(n-1));
+    return data[0];
 }
   
 //find mod
