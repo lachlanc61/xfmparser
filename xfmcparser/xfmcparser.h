@@ -1,0 +1,1 @@
+char getbyte(const char* data, int len);
