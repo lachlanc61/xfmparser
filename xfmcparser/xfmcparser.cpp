@@ -22,8 +22,9 @@ using std::cout;
 //byte example
 char getbyte(const char* stream, int streamlen)
 {
-    //seems cant print string like this:
-    cout << stream[1] << "\n";
+    char mychar = *(stream+1);
+    //seems cant print string like this, maybe not ascii chars?:
+    cout << stream << "\n";
     
     return stream[1];
 }
