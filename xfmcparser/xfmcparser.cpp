@@ -7,27 +7,35 @@
 //our header file
 #include "xfmcparser.h"
   
-//double tdouble = 3.4;
+using namespace std;
 
-// return first byte
+//byte example
 char getbyte(const char* data, int len)
 {
     return data[1];
 }
-  
-//find mod
-int my_mod(int n, int m)
-{
-  return(n % m);
-}
-
-using namespace std;
 
 //numpy example
-void mainline(double* dataPtr, int datasize) {
+void mainline(double* dataPtr, int datasize) 
+{
     for(size_t i = 0; i < datasize; ++i)
 //        printf("[%zu] %lf\n",i,dataPtr[i]);
         cout << i << "\t" << dataPtr[i] << "\n";
+}
+
+
+void combine(double* dataPtr, int datasize, const char* stream, int streamlen) 
+/*
+primary function recieving numpy array and bytestream*/
+{
+    cout << stream[1] << "\n";
+
+    cout << "numpy array values:\n";
+    for(size_t i = 0; i < datasize; ++i)
+    {
+//        printf("[%zu] %lf\n",i,dataPtr[i]);
+        cout << i << "\t" << dataPtr[i] << "\n";
+    }
 }
 
 

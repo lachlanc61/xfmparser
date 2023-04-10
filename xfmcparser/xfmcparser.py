@@ -68,4 +68,7 @@ def getbyte(data, len):
 def mainline(dataPtr):
     return _xfmcparser.mainline(dataPtr)
 
+def combine(dataPtr, stream, streamlen):
+    return _xfmcparser.combine(dataPtr, stream, streamlen)
+
 

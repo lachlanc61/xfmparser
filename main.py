@@ -21,4 +21,6 @@ b = np.array([1,2,3],dtype=np.int8)
 
 xfmcparser.mainline(a)
 
+xfmcparser.combine(a, stream, len(stream))
+
 a=1
