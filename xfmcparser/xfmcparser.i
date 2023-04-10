@@ -35,7 +35,7 @@ import_array();
 %}
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* dataPtr, int datasize)}
-%apply (char* IN_ARRAY1, int DIM1) {(char* headerPtr, int headersize)}
+//%apply (char* IN_ARRAY1, int DIM1) {(char* headerPtr, int headersize)}
 //%apply (signed char* IN_ARRAY1, int DIM1) {(char* headerPtr, int headersize)}
 
 %include "xfmcparser.h"

@@ -19,6 +19,6 @@ print(var)
 a = np.array([1.1,2.2,3.3])
 b = np.array([1,2,3],dtype=np.int8)
 
-xfmcparser.mainline(a,b)
+xfmcparser.mainline(a)
 
 a=1

@@ -3605,18 +3605,12 @@ SWIGINTERN PyObject *_wrap_mainline(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   PyObject *resultobj = 0;
   double *arg1 = (double *) 0 ;
   int arg2 ;
-  char *arg3 = (char *) 0 ;
-  int arg4 ;
   PyArrayObject *array1 = NULL ;
   int is_new_object1 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
-  int val4 ;
-  int ecode4 = 0 ;
-  PyObject *swig_obj[3] ;
+  PyObject *swig_obj[1] ;
   
-  if (!SWIG_Python_UnpackTuple(args, "mainline", 3, 3, swig_obj)) SWIG_fail;
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
   {
     npy_intp size[1] = {
       -1 
@@ -3629,17 +3623,7 @@ SWIGINTERN PyObject *_wrap_mainline(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
     arg1 = (double*) array_data(array1);
     arg2 = (int) array_size(array1,0);
   }
-  res3 = SWIG_AsCharPtrAndSize(swig_obj[1], &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "mainline" "', argument " "3"" of type '" "char *""'");
-  }
-  arg3 = reinterpret_cast< char * >(buf3);
-  ecode4 = SWIG_AsVal_int(swig_obj[2], &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "mainline" "', argument " "4"" of type '" "int""'");
-  } 
-  arg4 = static_cast< int >(val4);
-  mainline(arg1,arg2,arg3,arg4);
+  mainline(arg1,arg2);
   resultobj = SWIG_Py_Void();
   {
     if (is_new_object1 && array1)
@@ -3647,7 +3631,6 @@ SWIGINTERN PyObject *_wrap_mainline(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
       Py_DECREF(array1); 
     }
   }
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   return resultobj;
 fail:
   {
@@ -3656,7 +3639,6 @@ fail:
       Py_DECREF(array1); 
     }
   }
-  if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
   return NULL;
 }
 
@@ -3664,7 +3646,7 @@ fail:
 static PyMethodDef SwigMethods[] = {
 	 { "SWIG_PyInstanceMethod_New", SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { "getbyte", _wrap_getbyte, METH_VARARGS, NULL},
-	 { "mainline", _wrap_mainline, METH_VARARGS, NULL},
+	 { "mainline", _wrap_mainline, METH_O, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 

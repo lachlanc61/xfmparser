@@ -21,16 +21,15 @@ int my_mod(int n, int m)
   return(n % m);
 }
 
+using namespace std;
+
 //numpy example
-void mainline(double* dataPtr, int datasize, char* headerPtr, int headersize) {
+void mainline(double* dataPtr, int datasize) {
     for(size_t i = 0; i < datasize; ++i)
-        printf("[%zu] %lf\n",i,dataPtr[i]);
-    for(size_t i = 0; i < headersize; ++i)
-        printf("[%zu] %hhd\n",i,headerPtr[i]);
+//        printf("[%zu] %lf\n",i,dataPtr[i]);
+        cout << i << "\t" << dataPtr[i] << "\n";
 }
 
-
-using namespace std;
 
 int main()
 {

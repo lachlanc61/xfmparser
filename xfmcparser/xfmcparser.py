@@ -65,7 +65,7 @@ class _SwigNonDynamicMeta(type):
 def getbyte(data, len):
     return _xfmcparser.getbyte(data, len)
 
-def mainline(dataPtr, headerPtr, headersize):
-    return _xfmcparser.mainline(dataPtr, headerPtr, headersize)
+def mainline(dataPtr):
+    return _xfmcparser.mainline(dataPtr)
 
 
