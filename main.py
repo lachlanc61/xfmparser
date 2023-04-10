@@ -8,19 +8,18 @@ with open(f, mode='rb') as fi:
     stream = fi.read() 
 
 indexes = np.sort(np.random.randint(0,len(stream),size=(10)))
-print(indexes)
+print(f"input random indexes: {indexes}")
 
-#print(type(stream))
-#print(stream[0:100])
-var = xfmcparser.getbyte(stream, len(stream))
-
-print(var)
+print("---individual functions---")
+byte1 = xfmcparser.getbyte(stream, len(stream))
+print(f"Returned byte: {byte1}")
 
 a = np.array([1.1,2.2,3.3])
 b = np.array([1,2,3],dtype=np.int8)
 
 xfmcparser.mainline(a)
 
+print("---combined function---")
 xfmcparser.combine(a, stream, len(stream))
 
 a=1

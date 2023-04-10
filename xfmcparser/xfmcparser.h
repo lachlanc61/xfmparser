@@ -1,5 +1,9 @@
-char getbyte(const char* data, int len);
+char getbyte(const char* stream, int streamlen);
 
 void mainline(double* dataPtr, int datasize);
+
+//py::array Vec2NpArray(std::vector<T> *data, std::vector<size_t> shape)
+
+//PyObject* retarray(double* dataPtr, int datasize, const char* stream, int streamlen) 
 
 void combine(double* dataPtr, int datasize, const char* stream, int streamlen);
