@@ -8,9 +8,12 @@
      to compile the interface */
     #include "xfmcparser.h"
 
+    //numpy init
+    #define SWIG_FILE_WITH_INIT
+    
+    //treat bytes as char*
     #define SWIG_PYTHON_STRICT_BYTE_CHAR
 
-    double tdouble;
 %}
 
 /*recieve <bytes> objects as strings
@@ -24,7 +27,19 @@
 %apply (char *STRING, size_t LENGTH) { (const char* data, int len) }
 */
 
+
+
+%include "numpy.i"
+%init %{
+import_array();
+%}
+
+%apply (double* IN_ARRAY1, int DIM1) {(double* dataPtr, int datasize)}
+%apply (char* IN_ARRAY1, int DIM1) {(char* headerPtr, int headersize)}
+//%apply (signed char* IN_ARRAY1, int DIM1) {(char* headerPtr, int headersize)}
+
 %include "xfmcparser.h"
+
 
 /*char getbyte(const char* data, int len);
 double tdouble;*/

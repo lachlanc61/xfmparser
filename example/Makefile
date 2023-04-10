@@ -1,7 +1,7 @@
 # standard compile options for the c++ executable
 FLAGS = -fPIC
 
-NAME=xfmcparser
+NAME=example
 
 # the python interface through swig
 PYTHONI = -I/home/lachlan/.pyenv/versions/3.10.6/include/python3.10
