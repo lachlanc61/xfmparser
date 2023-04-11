@@ -16,6 +16,7 @@
 #include <pybind11/stl.h>
 
 
+
 using std::cout;
 
 //byte to int
@@ -31,20 +32,39 @@ char getbyte(const char* stream, int streamlen, int byteindex)
 {
 
     cout << std::hex;
-    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << "\n"; 
+    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << std::endl; 
     
     return stream[byteindex];
 }
 
 //numpy readout
-void mainline(double* dataPtr, int datasize) 
+double mainline(double* dataPtr, int datasize) 
 {
     for(size_t i = 0; i < datasize; ++i)
 //        printf("[%zu] %lf\n",i,dataPtr[i]);
-        cout << i << "\t" << dataPtr[i] << "\n";
+        cout << i << "\t" << dataPtr[i] << std::endl;
+
+    return(dataPtr[2]);
 }
 
-/*
+//numpy readout
+unsigned long long indexin(uint64_t* index_p, int indexsize) 
+{
+    unsigned long long retval;
+
+    for(size_t i = 0; i < indexsize; ++i)
+    {
+//        printf("[%zu] %lf\n",i,dataPtr[i]);
+        retval = index_p[i];
+    //    cout << i << "\t" << retval << std::endl;
+        printf("[%zu] %llu\n", i, retval);   //need to use printf, uint64 too large for cout apparently
+    }
+    return(retval);
+}
+
+
+
+namespace py = pybind11;
 template <typename T>
 py::array Vec2NpArray(std::vector<T> *data,
                       std::vector<size_t> shape) {
@@ -65,53 +85,41 @@ py::array Vec2NpArray(std::vector<T> *data,
 
    return py::array_t<T>(shape, stride, data->data(), capsule);
 }
-*/
 
 /*
-py::array retarray(double* dataPtr, int datasize, const char* stream, int streamlen) 
-/*
-primary function recieving numpy array and bytestream
-AND returning numpy array
-https://stackoverflow.com/questions/72373186/how-to-return-numpy-array-by-reference-in-pybind11
+int createnp() {
+    // Initialize data pointer
+    std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int* data_ptr = data.data();
 
-{
+    // Initialize shape pointer
+    std::vector<size_t> shape = {data.size()};
+    size_t* shape_ptr = shape.data();
 
-    npy_intp dims[] = {datasize};
+    // Convert vector to numpy array
+    auto np_array = Vec2NpArray<int>(&data, &shape);
 
-    PyObject* numpy_array = PyArray_SimpleNew(1, dims, NPY_INT); // create an uninitialized array of integers
-    int* numpy_data = (int*)PyArray_DATA(numpy_array); // get a pointer to the array data
-
-    cout << stream[1] << "\n";
-
-    cout << "numpy array values:\n";
-    for(size_t i = 0; i < datasize; ++i)
-    {
-//        printf("[%zu] %lf\n",i,dataPtr[i]);
-        cout << i << "\t" << dataPtr[i] << "\n";
-    }
-    for (int i = 0; i < 5; i++)
-    {
-        numpy_data[i] = dataPtr[i]; // copy data from C++ array to NumPy array
+    // Print numpy array
+    for (int i = 0; i < data.size(); i++) {
+        std::cout << np_array.at<int>(i) << " ";
     }
 
-    // Return the NumPy array to Python
-    return Py_BuildValue("O", numpy_array);
+    return 0;
 }
 */
-
 
 void combine(double* dataPtr, int datasize, const char* stream, int streamlen, int byteindex) 
 /*
 primary function recieving numpy array and bytestream*/
 {
     cout << std::hex;
-    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << "\n"; 
+    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << std::endl; 
 
     cout << "numpy array values:\n";
     for(size_t i = 0; i < datasize; ++i)
     {
 //        printf("[%zu] %lf\n",i,dataPtr[i]);
-        cout << i << "\t" << dataPtr[i] << "\n";
+        cout << i << "\t" << dataPtr[i] << std::endl;
     }
 }
 

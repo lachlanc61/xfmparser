@@ -3565,6 +3565,24 @@ SWIG_From_char  (char c)
 
 
 
+
+  #define SWIG_From_double   PyFloat_FromDouble 
+
+
+#if defined(LLONG_MAX) && !defined(SWIG_LONG_LONG_AVAILABLE)
+#  define SWIG_LONG_LONG_AVAILABLE
+#endif
+
+
+#ifdef SWIG_LONG_LONG_AVAILABLE
+SWIGINTERNINLINE PyObject* 
+SWIG_From_unsigned_SS_long_SS_long  (unsigned long long value)
+{
+  return (value > LONG_MAX) ?
+    PyLong_FromUnsignedLongLong(value) : PyInt_FromLong(static_cast< long >(value));
+}
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -3616,6 +3634,7 @@ SWIGINTERN PyObject *_wrap_mainline(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   PyArrayObject *array1 = NULL ;
   int is_new_object1 = 0 ;
   PyObject *swig_obj[1] ;
+  double result;
   
   if (!args) SWIG_fail;
   swig_obj[0] = args;
@@ -3631,8 +3650,51 @@ SWIGINTERN PyObject *_wrap_mainline(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
     arg1 = (double*) array_data(array1);
     arg2 = (int) array_size(array1,0);
   }
-  mainline(arg1,arg2);
-  resultobj = SWIG_Py_Void();
+  result = (double)mainline(arg1,arg2);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_indexin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  uint64_t *arg1 = (uint64_t *) 0 ;
+  int arg2 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyObject *swig_obj[1] ;
+  unsigned long long result;
+  
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  {
+    npy_intp size[1] = {
+      -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(swig_obj[0],
+      NPY_UINT64,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 1) ||
+      !require_size(array1, size, 1)) SWIG_fail;
+    arg1 = (uint64_t*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+  }
+  result = (unsigned long long)indexin(arg1,arg2);
+  resultobj = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   {
     if (is_new_object1 && array1)
     {
@@ -3723,6 +3785,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "SWIG_PyInstanceMethod_New", SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { "getbyte", _wrap_getbyte, METH_VARARGS, NULL},
 	 { "mainline", _wrap_mainline, METH_O, NULL},
+	 { "indexin", _wrap_indexin, METH_O, NULL},
 	 { "combine", _wrap_combine, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };

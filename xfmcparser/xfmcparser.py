@@ -68,6 +68,9 @@ def getbyte(stream, streamlen, byteindex):
 def mainline(dataPtr):
     return _xfmcparser.mainline(dataPtr)
 
+def indexin(index_p):
+    return _xfmcparser.indexin(index_p)
+
 def combine(dataPtr, stream, streamlen, byteindex):
     return _xfmcparser.combine(dataPtr, stream, streamlen, byteindex)
 
