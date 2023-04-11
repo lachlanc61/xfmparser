@@ -18,18 +18,25 @@
 
 using std::cout;
 
-
-//byte example
-char getbyte(const char* stream, int streamlen)
+//byte to int
+inline unsigned int to_uint(char ch)
 {
-    char mychar = *(stream+1);
-    //seems cant print string like this, maybe not ascii chars?:
-    cout << stream << "\n";
-    
-    return stream[1];
+    //using namespace std;
+
+    return static_cast<unsigned int>(static_cast<unsigned char>(ch));
 }
 
-//numpy example
+//byte readout
+char getbyte(const char* stream, int streamlen, int byteindex)
+{
+
+    cout << std::hex;
+    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << "\n"; 
+    
+    return stream[byteindex];
+}
+
+//numpy readout
 void mainline(double* dataPtr, int datasize) 
 {
     for(size_t i = 0; i < datasize; ++i)
@@ -93,12 +100,12 @@ https://stackoverflow.com/questions/72373186/how-to-return-numpy-array-by-refere
 */
 
 
-void combine(double* dataPtr, int datasize, const char* stream, int streamlen) 
+void combine(double* dataPtr, int datasize, const char* stream, int streamlen, int byteindex) 
 /*
 primary function recieving numpy array and bytestream*/
 {
-    cout << "byte:\n";
-    cout << stream[1] << "\n";
+    cout << std::hex;
+    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << "\n"; 
 
     cout << "numpy array values:\n";
     for(size_t i = 0; i < datasize; ++i)

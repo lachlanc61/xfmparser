@@ -3572,15 +3572,18 @@ SWIGINTERN PyObject *_wrap_getbyte(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
   int arg2 ;
+  int arg3 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  PyObject *swig_obj[2] ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject *swig_obj[3] ;
   char result;
   
-  if (!SWIG_Python_UnpackTuple(args, "getbyte", 2, 2, swig_obj)) SWIG_fail;
+  if (!SWIG_Python_UnpackTuple(args, "getbyte", 3, 3, swig_obj)) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(swig_obj[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "getbyte" "', argument " "1"" of type '" "char const *""'");
@@ -3591,7 +3594,12 @@ SWIGINTERN PyObject *_wrap_getbyte(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "getbyte" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  result = (char)getbyte((char const *)arg1,arg2);
+  ecode3 = SWIG_AsVal_int(swig_obj[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "getbyte" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  result = (char)getbyte((char const *)arg1,arg2,arg3);
   resultobj = SWIG_From_char(static_cast< char >(result));
   if (alloc1 == SWIG_NEWOBJ) delete[] buf1;
   return resultobj;
@@ -3649,6 +3657,7 @@ SWIGINTERN PyObject *_wrap_combine(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
   int arg2 ;
   char *arg3 = (char *) 0 ;
   int arg4 ;
+  int arg5 ;
   PyArrayObject *array1 = NULL ;
   int is_new_object1 = 0 ;
   int res3 ;
@@ -3656,9 +3665,11 @@ SWIGINTERN PyObject *_wrap_combine(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
   int alloc3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
-  PyObject *swig_obj[3] ;
+  int val5 ;
+  int ecode5 = 0 ;
+  PyObject *swig_obj[4] ;
   
-  if (!SWIG_Python_UnpackTuple(args, "combine", 3, 3, swig_obj)) SWIG_fail;
+  if (!SWIG_Python_UnpackTuple(args, "combine", 4, 4, swig_obj)) SWIG_fail;
   {
     npy_intp size[1] = {
       -1 
@@ -3681,7 +3692,12 @@ SWIGINTERN PyObject *_wrap_combine(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "combine" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
-  combine(arg1,arg2,(char const *)arg3,arg4);
+  ecode5 = SWIG_AsVal_int(swig_obj[3], &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "combine" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = static_cast< int >(val5);
+  combine(arg1,arg2,(char const *)arg3,arg4,arg5);
   resultobj = SWIG_Py_Void();
   {
     if (is_new_object1 && array1)

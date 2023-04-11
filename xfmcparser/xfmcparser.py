@@ -62,13 +62,13 @@ class _SwigNonDynamicMeta(type):
 
 
 
-def getbyte(stream, streamlen):
-    return _xfmcparser.getbyte(stream, streamlen)
+def getbyte(stream, streamlen, byteindex):
+    return _xfmcparser.getbyte(stream, streamlen, byteindex)
 
 def mainline(dataPtr):
     return _xfmcparser.mainline(dataPtr)
 
-def combine(dataPtr, stream, streamlen):
-    return _xfmcparser.combine(dataPtr, stream, streamlen)
+def combine(dataPtr, stream, streamlen, byteindex):
+    return _xfmcparser.combine(dataPtr, stream, streamlen, byteindex)
 
 

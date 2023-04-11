@@ -1,4 +1,4 @@
-char getbyte(const char* stream, int streamlen);
+char getbyte(const char* stream, int streamlen, int byteindex);
 
 void mainline(double* dataPtr, int datasize);
 
@@ -6,4 +6,4 @@ void mainline(double* dataPtr, int datasize);
 
 //PyObject* retarray(double* dataPtr, int datasize, const char* stream, int streamlen) 
 
-void combine(double* dataPtr, int datasize, const char* stream, int streamlen);
+void combine(double* dataPtr, int datasize, const char* stream, int streamlen, int byteindex);
