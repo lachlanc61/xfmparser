@@ -22,20 +22,28 @@ print("")
 print("---np.float function---")
 a = np.array([1.1,2.2,3.3])
 b = np.array([1,2,3],dtype=np.int8)
-result1=xfmcparser.mainline(a)
+result1=xfmcparser.doubleprint(a)
+print("---")
 print(f"Returned double: {result1}")
 
 print("")
 print("---np.uin64 function---")
-result2=xfmcparser.indexin(indexes)
+result2=xfmcparser.indexret(indexes)
+print("---")
 print(f"Returned uint64: {result2}")
 
-
-
 print("")
+print("-----------------------")
 print("---combined function---")
-print(f"Streamed byte: {hex(stream[byteindex])}")    
-xfmcparser.combine(a, stream, len(stream), byteindex)
+print("-----------------------")
+byten1 = xfmcparser.indexbyte(indexes, stream, len(stream))
+
+print("---python values---")
+for i in indexes:
+    print(f"[n] {[i]} {hex(stream[i])}")
+print("---")
+print(f"Returned byte: {hex(byten1[0])}")
+
 
 
 a=1

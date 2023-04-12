@@ -8,9 +8,9 @@
 */
 char getbyte(const char* stream, int streamlen, int byteindex);
 
-double mainline(double* dataPtr, int datasize);
+double doubleprint(double* dataPtr, int datasize);
 
-unsigned long long indexin(uint64_t* index_p, int indexsize);
+unsigned long indexret(uint64_t* indexes_p, int indexes_size);
 
 /*
 //setup pybind11 - not working currently, possibly pybind library not being passed to swig?
@@ -23,6 +23,6 @@ py::array Vec2NpArray(std::vector<T> *data, std::vector<size_t> shape);
 
 //PyObject* retarray(double* dataPtr, int datasize, const char* stream, int streamlen) 
 
-void combine(double* dataPtr, int datasize, const char* stream, int streamlen, int byteindex);
+char indexbyte(uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen);
 
 #endif // MYLIBRARY_H

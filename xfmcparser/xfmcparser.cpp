@@ -38,30 +38,40 @@ char getbyte(const char* stream, int streamlen, int byteindex)
 }
 
 //numpy readout
-double mainline(double* dataPtr, int datasize) 
+double doubleprint(double* dataPtr, int datasize) 
 {
     for(size_t i = 0; i < datasize; ++i)
-//        printf("[%zu] %lf\n",i,dataPtr[i]);
         cout << i << "\t" << dataPtr[i] << std::endl;
 
     return(dataPtr[2]);
 }
 
 //numpy readout
-unsigned long long indexin(uint64_t* index_p, int indexsize) 
+unsigned long indexret(uint64_t* indexes_p, int indexes_size) 
 {
-    unsigned long long retval;
-
-    for(size_t i = 0; i < indexsize; ++i)
+    for(size_t i = 0; i < indexes_size; ++i)
     {
-//        printf("[%zu] %lf\n",i,dataPtr[i]);
-        retval = index_p[i];
-    //    cout << i << "\t" << retval << std::endl;
-        printf("[%zu] %llu\n", i, retval);   //need to use printf, uint64 too large for cout apparently
+        printf("[%zu] %lu\n", i, indexes_p[i]);   //need to use printf, uint64 too large for cout apparently
     }
-    return(retval);
+    return(indexes_p[indexes_size-1]);
 }
 
+
+char indexbyte(uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen) 
+/*
+recieves numpy array of indexes and bytestream
+prints byte value at each position in indexes_p
+*/
+{
+    cout << "---C++ values---" << std::endl;
+    for (size_t i = 0 ; i < indexes_size ; i++ )
+    {
+        printf("[%zu] %lu", i, indexes_p[i]);
+        cout << std::hex;
+        cout << " 0x" << to_uint(stream[indexes_p[i]]) << std::endl;
+    }
+    return stream[indexes_p[indexes_size - 1]];
+}
 
 
 namespace py = pybind11;
@@ -108,20 +118,6 @@ int createnp() {
 }
 */
 
-void combine(double* dataPtr, int datasize, const char* stream, int streamlen, int byteindex) 
-/*
-primary function recieving numpy array and bytestream*/
-{
-    cout << std::hex;
-    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << std::endl; 
-
-    cout << "numpy array values:\n";
-    for(size_t i = 0; i < datasize; ++i)
-    {
-//        printf("[%zu] %lf\n",i,dataPtr[i]);
-        cout << i << "\t" << dataPtr[i] << std::endl;
-    }
-}
 
 
 int main()
