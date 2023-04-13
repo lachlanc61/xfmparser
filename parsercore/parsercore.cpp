@@ -142,6 +142,25 @@ prints byte value at each position in indexes_p
     }
 }
 
+inline unsigned short swap_16bit(unsigned short us)
+{
+    return (unsigned short)(((us & 0xFF00) >> 8) |
+                            ((us & 0x00FF) << 8));
+}
+
+
+#include <limits.h>
+
+uint16_t bytes_to_int_little_endian(const char* bytes)
+{
+    int i;
+    int result;
+
+    result = 0;
+    for (i = 0; i < sizeof(uint16_t); ++i)
+        result += bytes[i] << (i * CHAR_BIT);
+    return result;
+}
 
 
 py::array_t<uint16_t> readpixel(const char* stream, const int streamlen) 
@@ -160,15 +179,22 @@ prints byte value at each position in indexes_p
     auto result_buf = result.request();
     uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
 
+    //const uint16_t n = *(reinterpret_cast<const uint16_t *>(stream));
+
     cout << "---reading pixel from stream---" << std::endl;
 
     //for ( int i = 0 ; i < streamlen-1 ; i+=2 )
     //for ( int i = 0 ; i < 49 ; i+=2 )
-    for ( int i = 0 ; i < 49 ; i++ )
+    for ( int j = 0 ; j < 49 ; j++ )
     {
+        uint16_t resval = 0;
+        for (int i = 0; i < sizeof(uint16_t); ++i)
+        {
+            result_ptr[j] += stream[j+i] << (i * CHAR_BIT);        //little endian
+        }
         //std::cout << i << " = " << std::bitset<8>(stream[i])  << std::endl;
         //result_ptr[i] = to_uint16(stream[i]);
-        result_ptr[i] = *asint_ptr[i]
+        //result_ptr[i] = *n[i]
         //result_ptr[i] = (stream[i] << 8) | stream[i+1] ;
         //cout << result_ptr[i] << endl;
     }

@@ -15,6 +15,7 @@ print(f"stream length: {len(stream)}")
 
 print("---byte function---")
 byteindex = int(indexes[0])
+byteindex = 1
 print(f"Streamed byte: {hex(stream[byteindex])}")    
 parsercore.printbyte(stream, len(stream), byteindex)
 #print(byte1[0], type(byte1[0]))
@@ -48,7 +49,10 @@ print(type(d))
 
 c = parsercore.readpixel(stream, len(stream))
 print("---print a---")
-print(c)
+print(c[0:6])
+print(c[6:12])
+print(c[12:18])
+print(c[18:24])
 print(c.dtype)
 print(type(c))
 
