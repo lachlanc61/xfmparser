@@ -12,9 +12,10 @@
 //pybind11 includes
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
+//#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+namespace py = pybind11;
 
 using std::cout;
 using std::endl;
@@ -108,7 +109,7 @@ void ptrtrial()
 }
 
 
-char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen ) 
+char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen, uint64_t* data_p, int data_size) 
 /*
 recieves numpy array of indexes and bytestream
 prints byte value at each position in indexes_p
@@ -126,10 +127,11 @@ prints byte value at each position in indexes_p
 }
 
 
-namespace py = pybind11;
 
-/* C++ function that redirects to C func */
-void display(py::array_t<double> input1) 
+
+/* C++ function */
+//void pbtest(py::array_t<double> input1) 
+void pbtest(pybind11::array_t<double> input1)
 {
 
 	/*  read input arrays buffer_info */

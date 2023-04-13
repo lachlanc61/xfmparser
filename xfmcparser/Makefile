@@ -15,7 +15,7 @@ SOURCEDIR = ./
 all: 
 	g++ $(FLAGS) $(PYTHONI) $(NUMPYI) $(PYBINDI) -c $(SOURCEDIR)/$(NAME).cpp -o $(SOURCEDIR)/$(NAME).o
 	swig -c++ -python -o $(SOURCEDIR)$(NAME)_wrap.cxx $(SOURCEDIR)$(NAME).i 
-	g++ $(FLAGS) $(PYTHONI) $(NUMPYI) -c $(SOURCEDIR)$(NAME)_wrap.cxx -o $(SOURCEDIR)$(NAME)_wrap.o
+	g++ $(FLAGS) $(PYTHONI) $(NUMPYI) $(PYBINDI) -c $(SOURCEDIR)$(NAME)_wrap.cxx -o $(SOURCEDIR)$(NAME)_wrap.o
 	g++ $(PYTHONL) $(LIBFLAGS) -shared $(SOURCEDIR)$(NAME).o $(SOURCEDIR)$(NAME)_wrap.o -o $(SOURCEDIR)_$(NAME).so
 
 clean:

@@ -2658,8 +2658,9 @@ SWIGINTERN PyObject *SWIG_PyStaticMethod_New(PyObject *SWIGUNUSEDPARM(self), PyO
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-static swig_type_info *swig_types[2];
-static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
+#define SWIGTYPE_p_pybind11__array_tT_double_t swig_types[1]
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3715,6 +3716,8 @@ SWIGINTERN PyObject *_wrap_indexbyte(PyObject *SWIGUNUSEDPARM(self), PyObject *a
   int arg2 ;
   char *arg3 = (char *) 0 ;
   int arg4 ;
+  uint64_t *arg5 = (uint64_t *) 0 ;
+  int arg6 ;
   PyArrayObject *array1 = NULL ;
   int is_new_object1 = 0 ;
   int res3 ;
@@ -3722,10 +3725,12 @@ SWIGINTERN PyObject *_wrap_indexbyte(PyObject *SWIGUNUSEDPARM(self), PyObject *a
   int alloc3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
-  PyObject *swig_obj[3] ;
+  PyArrayObject *array5 = NULL ;
+  int is_new_object5 = 0 ;
+  PyObject *swig_obj[4] ;
   char result;
   
-  if (!SWIG_Python_UnpackTuple(args, "indexbyte", 3, 3, swig_obj)) SWIG_fail;
+  if (!SWIG_Python_UnpackTuple(args, "indexbyte", 4, 4, swig_obj)) SWIG_fail;
   {
     npy_intp size[1] = {
       -1 
@@ -3748,7 +3753,19 @@ SWIGINTERN PyObject *_wrap_indexbyte(PyObject *SWIGUNUSEDPARM(self), PyObject *a
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "indexbyte" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
-  result = (char)indexbyte((uint64_t const *)arg1,arg2,(char const *)arg3,arg4);
+  {
+    npy_intp size[1] = {
+      -1 
+    };
+    array5 = obj_to_array_contiguous_allow_conversion(swig_obj[3],
+      NPY_UINT64,
+      &is_new_object5);
+    if (!array5 || !require_dimensions(array5, 1) ||
+      !require_size(array5, size, 1)) SWIG_fail;
+    arg5 = (uint64_t*) array_data(array5);
+    arg6 = (int) array_size(array5,0);
+  }
+  result = (char)indexbyte((uint64_t const *)arg1,arg2,(char const *)arg3,arg4,arg5,arg6);
   resultobj = SWIG_From_char(static_cast< char >(result));
   {
     if (is_new_object1 && array1)
@@ -3757,6 +3774,12 @@ SWIGINTERN PyObject *_wrap_indexbyte(PyObject *SWIGUNUSEDPARM(self), PyObject *a
     }
   }
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  {
+    if (is_new_object5 && array5)
+    {
+      Py_DECREF(array5); 
+    }
+  }
   return resultobj;
 fail:
   {
@@ -3766,6 +3789,42 @@ fail:
     }
   }
   if (alloc3 == SWIG_NEWOBJ) delete[] buf3;
+  {
+    if (is_new_object5 && array5)
+    {
+      Py_DECREF(array5); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_pbtest(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  pybind11::array_t< double > arg1 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  PyObject *swig_obj[1] ;
+  
+  if (!args) SWIG_fail;
+  swig_obj[0] = args;
+  {
+    res1 = SWIG_ConvertPtr(swig_obj[0], &argp1, SWIGTYPE_p_pybind11__array_tT_double_t,  0  | 0);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "pbtest" "', argument " "1"" of type '" "pybind11::array_t< double >""'"); 
+    }  
+    if (!argp1) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "pbtest" "', argument " "1"" of type '" "pybind11::array_t< double >""'");
+    } else {
+      pybind11::array_t< double > * temp = reinterpret_cast< pybind11::array_t< double > * >(argp1);
+      arg1 = *temp;
+      if (SWIG_IsNewObj(res1)) delete temp;
+    }
+  }
+  pbtest(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -3788,6 +3847,7 @@ static PyMethodDef SwigMethods[] = {
 	 { "doubleprint", _wrap_doubleprint, METH_O, NULL},
 	 { "indexret", _wrap_indexret, METH_O, NULL},
 	 { "indexbyte", _wrap_indexbyte, METH_VARARGS, NULL},
+	 { "pbtest", _wrap_pbtest, METH_O, NULL},
 	 { "ptrtrial", _wrap_ptrtrial, METH_NOARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
@@ -3800,15 +3860,19 @@ static PyMethodDef SwigMethods_proxydocs[] = {
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_pybind11__array_tT_double_t = {"_p_pybind11__array_tT_double_t", "pybind11::array_t< double > *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
+  &_swigt__p_pybind11__array_tT_double_t,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_pybind11__array_tT_double_t[] = {  {&_swigt__p_pybind11__array_tT_double_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
+  _swigc__p_pybind11__array_tT_double_t,
 };
 
 

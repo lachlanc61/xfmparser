@@ -3,13 +3,11 @@
 
 
 //#include <vector>
-/*
+
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-*/
-
+#include <pybind11/pybind11.h>
 
 char getbyte(const char* stream, int streamlen, int byteindex);
 
@@ -32,8 +30,11 @@ py::array Vec2NpArray(std::vector<T> *data, std::vector<size_t> shape);
 
 //PyObject* retarray(double* dataPtr, int datasize, const char* stream, int streamlen) 
 
-char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen);
+char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen, uint64_t* data_p, int data_size);
 
+
+/* C++ function */
+void pbtest(pybind11::array_t<double> input1);
 
 void ptrtrial();
 

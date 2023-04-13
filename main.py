@@ -8,6 +8,7 @@ with open(f, mode='rb') as fi:
     stream = fi.read() 
 
 indexes = np.sort(np.random.randint(0,len(stream),size=(10),dtype=np.uint64))
+data = np.sort(np.random.randint(0,len(stream),size=(20),dtype=np.uint64))
 print(f"input random indexes: {indexes}")
 print(f"stream 0-50: {stream[0:50]}")
 
@@ -36,7 +37,7 @@ print("")
 print("-----------------------")
 print("---combined function---")
 print("-----------------------")
-byten1 = xfmcparser.indexbyte(indexes, stream, len(stream))
+byten1 = xfmcparser.indexbyte(indexes, stream, len(stream), indexes)
 
 print("---python values---")
 for i in indexes:
@@ -49,6 +50,7 @@ xfmcparser.ptrtrial()
 
 
 b = np.ones(10)*3
-xfmcparser.display(b)
+print(b.dtype)
+xfmcparser.pbtest(b)
 
 a=1

@@ -71,8 +71,11 @@ def doubleprint(dataPtr):
 def indexret(indexes_p):
     return _xfmcparser.indexret(indexes_p)
 
-def indexbyte(indexes_p, stream, streamlen):
-    return _xfmcparser.indexbyte(indexes_p, stream, streamlen)
+def indexbyte(indexes_p, stream, streamlen, data_p):
+    return _xfmcparser.indexbyte(indexes_p, stream, streamlen, data_p)
+
+def pbtest(input1):
+    return _xfmcparser.pbtest(input1)
 
 def ptrtrial():
     return _xfmcparser.ptrtrial()
