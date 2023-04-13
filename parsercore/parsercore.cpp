@@ -3,6 +3,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <tuple>
+
+#include <typeinfo>
+#include <type_traits>
 
 //our header file
 //#include "xfmcparser.h"
@@ -33,31 +37,45 @@ inline unsigned int to_uint(char ch)
 }
 
 //byte readout
-char getbyte(const char* stream, int streamlen, int byteindex)
+void printbyte(const char* stream, int streamlen, int byteindex)
 {
-
+    cout << typeid(stream[byteindex]).name() << std::endl;   
     cout << std::hex;
     cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << std::endl; 
-    
-    return stream[byteindex];
+
+    //not sure how to return to python as a bytes object yet
+    //char should work but need to convert on python end somehow
+    //not important for application so leave it
 }
 
 //numpy readout
-double doubleprint(double* dataPtr, int datasize) 
+double doubleprint(py::array_t<double> data) 
 {
-    for(size_t i = 0; i < datasize; ++i)
-        cout << i << "\t" << dataPtr[i] << std::endl;
+	/*  read input arrays buffer_info */
+	auto buf1 = data.request();
 
-    return(dataPtr[2]);
+	/*  variables */
+	double *ptr1 = (double *) buf1.ptr;
+	size_t N = buf1.shape[0];
+
+    for(int i = 0; i < int(N); ++i)
+        cout << i << "\t" << ptr1[i] << std::endl;
+
+    return(ptr1[2]);
 }
 
 
-#include <typeinfo>
-#include <type_traits>
-
 //numpy readout
-unsigned long indexret(const uint64_t* indexes_p, int indexes_size) 
+//unsigned long indexret(const uint64_t* indexes_p, int indexes_size) 
+unsigned long indexret(py::array_t<uint64_t> indexes) 
 {
+
+	/*  read input arrays buffer_info */
+	auto indexes_buf = indexes.request();
+
+	/*  variables */
+	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
+	size_t indexes_size = indexes_buf.shape[0];
 
     // vectors are declared via start and end+1 pointers
     //warning: creatng a vector copies the array
@@ -107,13 +125,20 @@ void ptrtrial()
 
 }
 
-
-char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen, uint64_t* data_p, int data_size) 
+void indexbyte(const py::array_t<uint64_t> indexes, const char* stream, int streamlen) 
+//char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen, uint64_t* data_p, int data_size) 
 /*
 recieves numpy array of indexes and bytestream
 prints byte value at each position in indexes_p
 */
 {
+
+    /*  read input arrays buffer_info */
+	auto indexes_buf = indexes.request();
+
+	/*  variables */
+	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
+	size_t indexes_size = indexes_buf.shape[0];
 
     cout << "---C++ values---" << std::endl;
     for (size_t i = 0 ; i < indexes_size ; i++ )
@@ -122,8 +147,41 @@ prints byte value at each position in indexes_p
         cout << std::hex;
         cout << " 0x" << to_uint(stream[indexes_p[i]]) << std::endl;
     }
-    return stream[indexes_p[indexes_size - 1]];
 }
+
+py::array_t<uint64_t> getchanarray(const py::array_t<uint64_t> indexes, const char* stream, int streamlen) 
+//char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen, uint64_t* data_p, int data_size) 
+/*
+recieves numpy array of indexes and bytestream
+prints byte value at each position in indexes_p
+*/
+{
+
+    /*  read input arrays buffer_info */
+	auto indexes_buf = indexes.request();
+
+	/*  variables */
+	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
+	size_t indexes_size = indexes_buf.shape[0];
+
+    py::array_t<uint64_t> result = py::array_t<uint64_t>(NCHAN);
+
+    auto result_buf = result.request();
+    uint64_t *result_ptr = (uint64_t *) result_buf.ptr;
+    size_t X = NCHAN;
+    size_t Y = NDET;
+
+    cout << "---generating chan/det array---" << std::endl;
+    for (size_t idx = 0; idx < X; idx++)
+        for (size_t idy = 0; idy < Y; idy++)
+            result_ptr[idx*Y + idy] = idx;
+
+    result.resize({X,Y});
+
+    return result;
+}
+
+
 
 
 
@@ -194,11 +252,13 @@ int createnp() {
 */
 
 /* Wrapping routines with PyBind */
-PYBIND11_MODULE(xfmcparser, m) {
+PYBIND11_MODULE(parsercore_lib, m) {
 	    m.doc() = ""; // optional module docstring
 	    m.def("pbtest", &pbtest, "pbtest array");
 	    m.def("indexbyte", &indexbyte, "indexbyte array");
         m.def("doubleprint", &doubleprint, "doubleprint array");
-        m.def("indexret", &indexbyte, "indexret array");
-        m.def("ptrtrial", &indexbyte, "ptrtrial");
+        m.def("indexret", &indexret, "indexret array");
+        m.def("getchanarray", &getchanarray, "getchanarray");
+        m.def("printbyte", &printbyte, "printbyte");
+        m.def("ptrtrial", &ptrtrial, "ptrtrial");
 }

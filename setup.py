@@ -27,8 +27,8 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'wrapper',
-        sources=['xfmcparser/xfmcparser.cpp'],
+        'parsercore_lib',
+        sources=['parsercore/parsercore.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
@@ -101,7 +101,7 @@ class BuildExt(build_ext):
         build_ext.build_extensions(self)
 
 setup(
-    name='xfmcparser',
+    name='parsercore',
     version=__version__,
     author='Lachlan Casey',
     author_email='lachlanc.612@gmail.com',
