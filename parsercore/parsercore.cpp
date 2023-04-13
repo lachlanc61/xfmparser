@@ -164,12 +164,13 @@ prints byte value at each position in indexes_p
 	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
 	size_t indexes_size = indexes_buf.shape[0];
 
-    py::array_t<uint64_t> result = py::array_t<uint64_t>(NCHAN);
+    size_t X = NCHAN;
+    size_t Y = NDET;
+
+    py::array_t<uint64_t> result = py::array_t<uint64_t>(X*Y);
 
     auto result_buf = result.request();
     uint64_t *result_ptr = (uint64_t *) result_buf.ptr;
-    size_t X = NCHAN;
-    size_t Y = NDET;
 
     cout << "---generating chan/det array---" << std::endl;
     for (size_t idx = 0; idx < X; idx++)
@@ -180,10 +181,6 @@ prints byte value at each position in indexes_p
 
     return result;
 }
-
-
-
-
 
 
 /* C++ function */

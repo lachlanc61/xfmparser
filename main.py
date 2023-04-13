@@ -42,8 +42,10 @@ parsercore.indexbyte(indexes, stream, len(stream))
 
 a = parsercore.getchanarray(indexes, stream, len(stream))
 
+print("---print a---")
 print(a)
-print(np.dtype(a))
+print(a.dtype)
+print(type(a))
 
 print("---pointer test---")
 parsercore.ptrtrial()
