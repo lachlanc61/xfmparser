@@ -16,8 +16,13 @@
 #include <pybind11/stl.h>
 
 
-
 using std::cout;
+using std::endl;
+
+int const NCHAN = 4096;
+int const NDET = 2;
+int const PXHEADERLEN = 16;
+
 
 //byte to int
 inline unsigned int to_uint(char ch)
@@ -46,23 +51,70 @@ double doubleprint(double* dataPtr, int datasize)
     return(dataPtr[2]);
 }
 
+
+#include <typeinfo>
+#include <type_traits>
+
 //numpy readout
-unsigned long indexret(uint64_t* indexes_p, int indexes_size) 
+unsigned long indexret(const uint64_t* indexes_p, int indexes_size) 
 {
+
+    // vectors are declared via start and end+1 pointers
+    //warning: creatng a vector copies the array
+    std::vector<uint64_t> d_vector(indexes_p, indexes_p + indexes_size);
+
+    cout << "cpp input numpy" << std::endl;
+    cout << indexes_p << std::endl;
+    cout << typeid(indexes_p).name() << std::endl;
+
     for(size_t i = 0; i < indexes_size; ++i)
     {
         printf("[%zu] %lu\n", i, indexes_p[i]);   //need to use printf, uint64 too large for cout apparently
     }
+
+    //int *p = &d_vector[0]
+
+    cout << "cpp vector" << std::endl;
+    cout << &d_vector[0] << std::endl;
+    cout << typeid(d_vector).name() << std::endl;
+    cout << typeid(&d_vector[0]).name() << std::endl;
+
+    for(size_t i = 0; i < indexes_size; ++i)
+    {
+        printf("[%zu] %lu\n", i, d_vector[i]);   //need to use printf, uint64 too large for cout apparently
+    }
+
+    cout << d_vector.size() << std::endl;
+    //cout << indexes_p.size();
+
     return(indexes_p[indexes_size-1]);
 }
 
 
-char indexbyte(uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen) 
+void ptrtrial() 
+{
+    int val = 10;
+    int *p = &val;
+   // int *p = 10;    
+    cout << "reference" <<endl;
+    cout << val <<endl;
+    cout << &val << endl;
+
+    cout << "pointer" <<endl;
+    cout << p << endl;
+    cout << *p << endl;
+    cout << &p << endl;
+
+}
+
+
+char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen ) 
 /*
 recieves numpy array of indexes and bytestream
 prints byte value at each position in indexes_p
 */
 {
+
     cout << "---C++ values---" << std::endl;
     for (size_t i = 0 ; i < indexes_size ; i++ )
     {
@@ -74,6 +126,27 @@ prints byte value at each position in indexes_p
 }
 
 
+namespace py = pybind11;
+
+/* C++ function that redirects to C func */
+void display(py::array_t<double> input1) 
+{
+
+	/*  read input arrays buffer_info */
+	auto buf1 = input1.request();
+
+	/*  variables */
+	double *ptr1 = (double *) buf1.ptr;
+	size_t N = buf1.shape[0];
+
+	for ( int i = 0; i < N; i++ )
+	{
+		printf("val[%d] = %f \n", i, ptr1[i]);
+	}
+
+}
+
+/*
 namespace py = pybind11;
 template <typename T>
 py::array Vec2NpArray(std::vector<T> *data,
@@ -95,6 +168,7 @@ py::array Vec2NpArray(std::vector<T> *data,
 
    return py::array_t<T>(shape, stride, data->data(), capsule);
 }
+*/
 
 /*
 int createnp() {

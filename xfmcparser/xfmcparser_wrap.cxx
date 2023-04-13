@@ -3689,7 +3689,7 @@ SWIGINTERN PyObject *_wrap_indexret(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
     arg1 = (uint64_t*) array_data(array1);
     arg2 = (int) array_size(array1,0);
   }
-  result = (unsigned long)indexret(arg1,arg2);
+  result = (unsigned long)indexret((uint64_t const *)arg1,arg2);
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   {
     if (is_new_object1 && array1)
@@ -3748,7 +3748,7 @@ SWIGINTERN PyObject *_wrap_indexbyte(PyObject *SWIGUNUSEDPARM(self), PyObject *a
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "indexbyte" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
-  result = (char)indexbyte(arg1,arg2,(char const *)arg3,arg4);
+  result = (char)indexbyte((uint64_t const *)arg1,arg2,(char const *)arg3,arg4);
   resultobj = SWIG_From_char(static_cast< char >(result));
   {
     if (is_new_object1 && array1)
@@ -3770,12 +3770,25 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_ptrtrial(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!SWIG_Python_UnpackTuple(args, "ptrtrial", 0, 0, 0)) SWIG_fail;
+  ptrtrial();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { "SWIG_PyInstanceMethod_New", SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { "getbyte", _wrap_getbyte, METH_VARARGS, NULL},
 	 { "doubleprint", _wrap_doubleprint, METH_O, NULL},
 	 { "indexret", _wrap_indexret, METH_O, NULL},
 	 { "indexbyte", _wrap_indexbyte, METH_VARARGS, NULL},
+	 { "ptrtrial", _wrap_ptrtrial, METH_NOARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 

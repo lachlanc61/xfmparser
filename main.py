@@ -44,6 +44,11 @@ for i in indexes:
 print("---")
 print(f"Returned byte: {hex(byten1[0])}")
 
+print("---pointer test---")
+xfmcparser.ptrtrial()
 
+
+b = np.ones(10)*3
+xfmcparser.display(b)
 
 a=1

@@ -36,7 +36,7 @@ import_array();
 //numpy array typemap
 //something in numpy.i gets DIM1 from the array object - just need to pass np array itself
 %apply (double* IN_ARRAY1, int DIM1) {(double* dataPtr, int datasize)}
-%apply (uint64_t* IN_ARRAY1, int DIM1) {(uint64_t* indexes_p, int indexes_size)}
+%apply (uint64_t* IN_ARRAY1, int DIM1) {(const uint64_t* indexes_p, int indexes_size)}
 //%apply (char* IN_ARRAY1, int DIM1) {(char* headerPtr, int headersize)}
 //%apply (signed char* IN_ARRAY1, int DIM1) {(char* headerPtr, int headersize)}
 

@@ -74,4 +74,7 @@ def indexret(indexes_p):
 def indexbyte(indexes_p, stream, streamlen):
     return _xfmcparser.indexbyte(indexes_p, stream, streamlen)
 
+def ptrtrial():
+    return _xfmcparser.ptrtrial()
+
 
