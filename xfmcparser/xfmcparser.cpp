@@ -5,14 +5,13 @@
 #include <string>
 
 //our header file
-#include "xfmcparser.h"
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include "numpy/arrayobject.h"
+//#include "xfmcparser.h"
+
+//#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+//#include "numpy/arrayobject.h"
 
 //pybind11 includes
-#include <pybind11/functional.h>
 #include <pybind11/numpy.h>
-//#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
@@ -194,17 +193,12 @@ int createnp() {
 }
 */
 
-
-
-int main()
-{
-    using namespace std;
-
-    vector<string> msg {"Hello", "C++", "World", "from", "VS Code", "and the C++ extension!"};
-    
-    for (const string& word : msg)
-    {
-        cout << word << " ";
-    }
-    cout << endl;
+/* Wrapping routines with PyBind */
+PYBIND11_MODULE(xfmcparser, m) {
+	    m.doc() = ""; // optional module docstring
+	    m.def("pbtest", &pbtest, "pbtest array");
+	    m.def("indexbyte", &indexbyte, "indexbyte array");
+        m.def("doubleprint", &doubleprint, "doubleprint array");
+        m.def("indexret", &indexbyte, "indexret array");
+        m.def("ptrtrial", &indexbyte, "ptrtrial");
 }
