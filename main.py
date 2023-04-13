@@ -11,7 +11,7 @@ indexes = np.sort(np.random.randint(0,len(stream),size=(10),dtype=np.uint64))
 data = np.sort(np.random.randint(0,len(stream),size=(20),dtype=np.uint64))
 print(f"input random indexes: {indexes}")
 print(f"stream 0-50: {stream[0:50]}")
-
+print(f"stream length: {len(stream)}")
 
 print("---byte function---")
 byteindex = int(indexes[0])
@@ -40,15 +40,18 @@ print("---combined function---")
 print("-----------------------")
 parsercore.indexbyte(indexes, stream, len(stream))
 
-a = parsercore.getchanarray(indexes, stream, len(stream))
-
+d = parsercore.returnchanarray(indexes, stream, len(stream))
 print("---print a---")
-print(a)
-print(a.dtype)
-print(type(a))
+print(d)
+print(d.dtype)
+print(type(d))
 
-print("---pointer test---")
-parsercore.ptrtrial()
+c = parsercore.readpixel(stream, len(stream))
+print("---print a---")
+print(c)
+print(c.dtype)
+print(type(c))
+
 """
 
 b = np.ones(10)*3

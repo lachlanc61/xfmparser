@@ -36,8 +36,17 @@ inline unsigned int to_uint(char ch)
     return static_cast<unsigned int>(static_cast<unsigned char>(ch));
 }
 
+
+inline unsigned int to_uint16(char ch)
+{
+    //using namespace std;
+
+    return static_cast<uint16_t>(static_cast<unsigned char>(ch));
+}
+
+
 //byte readout
-void printbyte(const char* stream, int streamlen, int byteindex)
+void printbyte(const char* stream, const int streamlen, int byteindex)
 {
     cout << typeid(stream[byteindex]).name() << std::endl;   
     cout << std::hex;
@@ -109,23 +118,7 @@ unsigned long indexret(py::array_t<uint64_t> indexes)
 }
 
 
-void ptrtrial() 
-{
-    int val = 10;
-    int *p = &val;
-   // int *p = 10;    
-    cout << "reference" <<endl;
-    cout << val <<endl;
-    cout << &val << endl;
-
-    cout << "pointer" <<endl;
-    cout << p << endl;
-    cout << *p << endl;
-    cout << &p << endl;
-
-}
-
-void indexbyte(const py::array_t<uint64_t> indexes, const char* stream, int streamlen) 
+void indexbyte(const py::array_t<uint64_t> indexes, const char* stream, const int streamlen) 
 //char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen, uint64_t* data_p, int data_size) 
 /*
 recieves numpy array of indexes and bytestream
@@ -149,8 +142,43 @@ prints byte value at each position in indexes_p
     }
 }
 
-py::array_t<uint64_t> getchanarray(const py::array_t<uint64_t> indexes, const char* stream, int streamlen) 
-//char indexbyte(const uint64_t* indexes_p, int indexes_size, const char* stream, int streamlen, uint64_t* data_p, int data_size) 
+
+
+py::array_t<uint16_t> readpixel(const char* stream, const int streamlen) 
+/*
+recieves numpy array of indexes and bytestream
+prints byte value at each position in indexes_p
+*/
+{
+    int NCOLS = 2;
+
+    size_t X = NCHAN;
+    //size_t Y = NCOLS;
+
+    py::array_t<uint16_t> result = py::array_t<uint16_t>(X*2);
+
+    auto result_buf = result.request();
+    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
+
+    cout << "---reading pixel from stream---" << std::endl;
+
+    //for ( int i = 0 ; i < streamlen-1 ; i+=2 )
+    //for ( int i = 0 ; i < 49 ; i+=2 )
+    for ( int i = 0 ; i < 49 ; i++ )
+    {
+        //std::cout << i << " = " << std::bitset<8>(stream[i])  << std::endl;
+        //result_ptr[i] = to_uint16(stream[i]);
+        result_ptr[i] = *asint_ptr[i]
+        //result_ptr[i] = (stream[i] << 8) | stream[i+1] ;
+        //cout << result_ptr[i] << endl;
+    }
+
+    return result;
+}
+
+
+
+py::array_t<uint64_t> returnchanarray(const py::array_t<uint64_t> indexes, const char* stream, int streamlen) 
 /*
 recieves numpy array of indexes and bytestream
 prints byte value at each position in indexes_p
@@ -159,10 +187,6 @@ prints byte value at each position in indexes_p
 
     /*  read input arrays buffer_info */
 	auto indexes_buf = indexes.request();
-
-	/*  variables */
-	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
-	size_t indexes_size = indexes_buf.shape[0];
 
     size_t X = NCHAN;
     size_t Y = NDET;
@@ -182,25 +206,6 @@ prints byte value at each position in indexes_p
     return result;
 }
 
-
-/* C++ function */
-//void pbtest(py::array_t<double> input1) 
-void pbtest(pybind11::array_t<double> input1)
-{
-
-	/*  read input arrays buffer_info */
-	auto buf1 = input1.request();
-
-	/*  variables */
-	double *ptr1 = (double *) buf1.ptr;
-	size_t N = buf1.shape[0];
-
-	for ( int i = 0; i < N; i++ )
-	{
-		printf("val[%d] = %f \n", i, ptr1[i]);
-	}
-
-}
 
 /*
 namespace py = pybind11;
@@ -226,36 +231,14 @@ py::array Vec2NpArray(std::vector<T> *data,
 }
 */
 
-/*
-int createnp() {
-    // Initialize data pointer
-    std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    int* data_ptr = data.data();
-
-    // Initialize shape pointer
-    std::vector<size_t> shape = {data.size()};
-    size_t* shape_ptr = shape.data();
-
-    // Convert vector to numpy array
-    auto np_array = Vec2NpArray<int>(&data, &shape);
-
-    // Print numpy array
-    for (int i = 0; i < data.size(); i++) {
-        std::cout << np_array.at<int>(i) << " ";
-    }
-
-    return 0;
-}
-*/
 
 /* Wrapping routines with PyBind */
 PYBIND11_MODULE(parsercore_lib, m) {
 	    m.doc() = ""; // optional module docstring
-	    m.def("pbtest", &pbtest, "pbtest array");
 	    m.def("indexbyte", &indexbyte, "indexbyte array");
         m.def("doubleprint", &doubleprint, "doubleprint array");
         m.def("indexret", &indexret, "indexret array");
-        m.def("getchanarray", &getchanarray, "getchanarray");
+        m.def("returnchanarray", &returnchanarray, "returnchanarray");
         m.def("printbyte", &printbyte, "printbyte");
-        m.def("ptrtrial", &ptrtrial, "ptrtrial");
+        m.def("readpixel", &readpixel, "readpixel");
 }
