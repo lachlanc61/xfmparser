@@ -151,36 +151,6 @@ inline unsigned short swap_16bit(unsigned short us)
 }
 
 
-
-/*
-uint16_t bytes_to_uint16_little_endian(const char* byte1, const char* byte2)
-{
-    int i;
-    int result;
-
-    result = 0;
-    for (i = 0; i < sizeof(uint16_t); ++i)
-        result += bytes[i] << (i * CHAR_BIT);
-    return result;
-}
-*/
-
-#include <limits.h>
-
-uint16_t bytes_to_uint16_little_endian(const char byte1, const char byte2)
-{
-    uint16_t result = 0;
-
-    cout << " b1 " << byte1 << " b2 " << byte2 << endl;
-    result += byte1;
-    cout << result << endl;
-    result += byte2 << (CHAR_BIT);
-    cout << result << endl;
-
-    return result;
-}
-
-
 void printpixel(const char* stream, const int streamlen)
 /*
     minimal converter, prints out series of uint16_t from raw bytes
@@ -262,32 +232,6 @@ prints byte value at each position in indexes_p
 
     return result;
 }
-
-
-/*
-namespace py = pybind11;
-template <typename T>
-py::array Vec2NpArray(std::vector<T> *data,
-                      std::vector<size_t> shape) {
-
-   // calculate stride of multidimensional data from shape
-   std::vector<size_t> stride(shape.size(), 0);
-   size_t elm_stride = sizeof(T);
-   auto shape_it = shape.rbegin();
-   auto stride_it = stride.rbegin();
-   for (; stride_it != stride.rend(); stride_it++, shape_it++) {
-      *stride_it = elm_stride;
-      elm_stride *= *shape_it;
-   }
-
-   // tell python to delete pointer when deconstruction
-   auto capsule = py::capsule(
-       data, [](void *data) { delete reinterpret_cast<std::vector<T> *>(data); });
-
-   return py::array_t<T>(shape, stride, data->data(), capsule);
-}
-*/
-
 
 /* Wrapping routines with PyBind */
 PYBIND11_MODULE(parsercore_lib, m) {
