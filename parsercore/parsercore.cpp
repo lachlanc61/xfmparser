@@ -182,7 +182,7 @@ prints byte value at each position in indexes_p
 {
     int NCOLS = 2;
 
-    size_t X = streamlen/2;
+    size_t X = streamlen/sizeof(uint16_t);
     //size_t Y = NCOLS;
     size_t Y = 1;
 
@@ -194,14 +194,54 @@ prints byte value at each position in indexes_p
     cout << "===reading pixel from stream===" << std::endl;
 
     auto voidPtr = static_cast<void const *>(stream);
-    auto intPtr = static_cast<uint16_t const *>(voidPtr);
+    auto uintPtr = static_cast<uint16_t const *>(voidPtr);
 
     for (size_t i = 0; i < streamlen / sizeof(uint16_t); ++i) {
-        result_ptr[i] = intPtr[i];
+        result_ptr[i] = uintPtr[i];
     }
 
     return result;
 }
+
+
+py::array_t<uint16_t> readpixelcounts(const char* stream, const int streamlen) 
+/*
+reads pixeldata stream as:
+    uint16(chan) uint16(counts)
+returns 1D numpy array of counts, w/ missing = 0
+
+WARNING: currently system MUST BE little-endian 
+*/
+{
+    //initialise and zero result array
+    size_t X = NCHAN;   //no. channels
+
+    py::array_t<uint16_t> result = py::array_t<uint16_t>(X);
+    auto result_buf = result.request();
+    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
+
+    for (size_t i = 0; i < X; i++)
+    {
+        
+        result_ptr[i]=0;
+    }
+
+    //setup conversion casts
+    auto voidPtr = static_cast<void const *>(stream);
+    auto uintPtr = static_cast<uint16_t const *>(voidPtr);
+
+    //fill result array from stream
+    uint16_t channel = NCHAN+1;    //init to value outside array JIC
+    for (size_t i = 0; i < streamlen / sizeof(uint16_t); ++i) {
+        if ( i % sizeof(uint16_t) == 0 )
+        { channel = uintPtr[i]; }
+        else
+        { result_ptr[channel] = uintPtr[i]; }
+    }
+
+    return result;
+}
+
 
 
 
@@ -243,4 +283,5 @@ PYBIND11_MODULE(parsercore_lib, m) {
         m.def("printbyte", &printbyte, "printbyte");
         m.def("printpixel", &printpixel, "printpixel");
         m.def("readpixel1D", &readpixel1D, "readpixel1D");
+        m.def("readpixelcounts", &readpixelcounts, "readpixelcounts");        
 }

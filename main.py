@@ -19,7 +19,7 @@ def hexfrombyte(byte):
 
 def main():
     if BYTEORDER != sys.byteorder:
-        print("WARNING: system byteorder differs from data byteorder")
+        raise EnvironmentError("FATAL: System byteorder differs from data byteorder, C++ pixel extraction will fail")
 
     f="datasets/px14387_1_data.bin"
     fct="datasets/px14387_1_data_counts.npy"
@@ -93,12 +93,13 @@ def main():
     print(target_1D[0:12])
     print(target_1D.dtype)
     print(target_1D.shape)
-    """
 
-    b = np.ones(10)*3
-    print(b.dtype)
-    parsercore.pbtest(b)
-    """
+
+    out_2D = parsercore.readpixelcounts(stream, len(stream))
+    print("---print converted 1D array from C++---")
+    print(out_2D[144:155])
+    print(out_2D.dtype)
+    print(out_2D.shape)
 
     a=1
 
