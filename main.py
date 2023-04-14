@@ -27,7 +27,9 @@ def main():
 
     counts=np.load(fct)
     chan=np.load(fchan)
-    correct_extract=np.ravel(np.vstack((chan, counts)),order='F')
+    print("dtypes:")
+    print(f"counts {counts.dtype}, {chan.dtype}:")
+    target_1D=np.ravel(np.vstack((chan, counts)),order='F')
 
     with open(f, mode='rb') as fi:
         stream = fi.read() 
@@ -37,7 +39,7 @@ def main():
     print(f"input random indexes: {indexes}")
     print(f"stream 0-50: {stream[0:50]}")
     print(f"stream length: {len(stream)}")
-    print(f"converted stream: {correct_extract[0:50]}")
+    print(f"converted stream: {target_1D[0:50]}")
 
 
     print("---byte function---")
@@ -81,15 +83,16 @@ def main():
     print(d.dtype)
     print(type(d))
 
-    c = parsercore.readpixel(stream, len(stream))
-    print("---print a---")
-    print(c[0:6])
-    print(c[6:12])
-    print(c[12:18])
-    print(c[18:24])
-    print(c.dtype)
-    print(type(c))
-
+    parsercore.printpixel(stream, len(stream))
+    out_1D = parsercore.readpixel1D(stream, len(stream))
+    print("---print converted 1D array from C++---")
+    print(out_1D[0:12])
+    print(out_1D.dtype)
+    print(out_1D.shape)
+    print("---print converted 1D array from Python---")
+    print(target_1D[0:12])
+    print(target_1D.dtype)
+    print(target_1D.shape)
     """
 
     b = np.ones(10)*3

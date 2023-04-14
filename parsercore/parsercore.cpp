@@ -48,9 +48,9 @@ inline unsigned int to_uint16(char ch)
 //byte readout
 void printbyte(const char* stream, const int streamlen, int byteindex)
 {
-    cout << typeid(stream[byteindex]).name() << std::endl;   
+    cout << "=" << typeid(stream[byteindex]).name() << std::endl;   
     cout << std::hex;
-    cout << "C++ byte: 0x" << to_uint(stream[byteindex]) << std::endl; 
+    cout << "===C++ byte: 0x" << to_uint(stream[byteindex]) << std::endl; 
 
     //not sure how to return to python as a bytes object yet
     //char should work but need to convert on python end somehow
@@ -68,7 +68,7 @@ double doubleprint(py::array_t<double> data)
 	size_t N = buf1.shape[0];
 
     for(int i = 0; i < int(N); ++i)
-        cout << i << "\t" << ptr1[i] << std::endl;
+        cout << "=" << i << "\t" << ptr1[i] << std::endl;
 
     return(ptr1[2]);
 }
@@ -90,9 +90,9 @@ unsigned long indexret(py::array_t<uint64_t> indexes)
     //warning: creatng a vector copies the array
     std::vector<uint64_t> d_vector(indexes_p, indexes_p + indexes_size);
 
-    cout << "cpp input numpy" << std::endl;
-    cout << indexes_p << std::endl;
-    cout << typeid(indexes_p).name() << std::endl;
+    cout << "===cpp input numpy" << std::endl;
+    cout << "=" << indexes_p << std::endl;
+    cout << "=" << typeid(indexes_p).name() << std::endl;
 
     for(size_t i = 0; i < indexes_size; ++i)
     {
@@ -101,17 +101,17 @@ unsigned long indexret(py::array_t<uint64_t> indexes)
 
     //int *p = &d_vector[0]
 
-    cout << "cpp vector" << std::endl;
-    cout << &d_vector[0] << std::endl;
-    cout << typeid(d_vector).name() << std::endl;
-    cout << typeid(&d_vector[0]).name() << std::endl;
+    cout << "===cpp vector" << std::endl;
+    cout << "=" << &d_vector[0] << std::endl;
+    cout << "=" << typeid(d_vector).name() << std::endl;
+    cout << "=" << typeid(&d_vector[0]).name() << std::endl;
 
     for(size_t i = 0; i < indexes_size; ++i)
     {
         printf("[%zu] %lu\n", i, d_vector[i]);   //need to use printf, uint64 too large for cout apparently
     }
 
-    cout << d_vector.size() << std::endl;
+    cout << "=" << d_vector.size() << std::endl;
     //cout << indexes_p.size();
 
     return(indexes_p[indexes_size-1]);
@@ -133,12 +133,14 @@ prints byte value at each position in indexes_p
 	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
 	size_t indexes_size = indexes_buf.shape[0];
 
-    cout << "---C++ values---" << std::endl;
+    cout << "===C++ values===" << std::endl;
     for (size_t i = 0 ; i < indexes_size ; i++ )
     {
+        cout << "= 0x";
         printf("[%zu] %lu", i, indexes_p[i]);
         cout << std::hex;
-        cout << " 0x" << to_uint(stream[indexes_p[i]]) << std::endl;
+        cout << to_uint(stream[indexes_p[i]]) << std::endl;
+        cout << std::dec;
     }
 }
 
@@ -149,9 +151,9 @@ inline unsigned short swap_16bit(unsigned short us)
 }
 
 
-#include <limits.h>
 
-uint16_t bytes_to_int_little_endian(const char* bytes)
+/*
+uint16_t bytes_to_uint16_little_endian(const char* byte1, const char* byte2)
 {
     int i;
     int result;
@@ -161,9 +163,48 @@ uint16_t bytes_to_int_little_endian(const char* bytes)
         result += bytes[i] << (i * CHAR_BIT);
     return result;
 }
+*/
+
+#include <limits.h>
+
+uint16_t bytes_to_uint16_little_endian(const char byte1, const char byte2)
+{
+    uint16_t result = 0;
+
+    cout << " b1 " << byte1 << " b2 " << byte2 << endl;
+    result += byte1;
+    cout << result << endl;
+    result += byte2 << (CHAR_BIT);
+    cout << result << endl;
+
+    return result;
+}
 
 
-py::array_t<uint16_t> readpixel(const char* stream, const int streamlen) 
+void printpixel(const char* stream, const int streamlen)
+/*
+    minimal converter, prints out series of uint16_t from raw bytes
+    https://stackoverflow.com/questions/47816805/c-how-to-cast-multiple-bytes-from-char-into-one-integer
+
+    NOTE: system MUST BE little-endian at the moment
+        https://stackoverflow.com/questions/19751130/how-to-read-big-endian-integers-from-file-in-c
+    possible solutions in OP comments:
+        https://stackoverflow.com/questions/66762830/reading-little-endian-from-binary-file-into-integers-in-c
+        length = sizeof(int); my_input_file.read(reinterpret_cast<char*>(&num), length);
+        OR
+        Read into a uint8_t bytes[4] then compute the result as bytes[0] + (bytes[1]<<8) + (bytes[2]<<16) + ...).
+*/
+{
+    auto voidPtr = static_cast<void const *>(stream);
+    auto intPtr = static_cast<uint16_t const *>(voidPtr);
+
+    for (size_t i = 0; i < streamlen / sizeof(uint16_t); ++i) {
+    cout << "uint16_t: " << intPtr[i] << endl;
+    }
+}
+
+
+py::array_t<uint16_t> readpixel1D(const char* stream, const int streamlen) 
 /*
 recieves numpy array of indexes and bytestream
 prints byte value at each position in indexes_p
@@ -171,34 +212,22 @@ prints byte value at each position in indexes_p
 {
     int NCOLS = 2;
 
-    size_t X = NCHAN;
+    size_t X = streamlen/2;
     //size_t Y = NCOLS;
+    size_t Y = 1;
 
-    py::array_t<uint16_t> result = py::array_t<uint16_t>(X*2);
+    py::array_t<uint16_t> result = py::array_t<uint16_t>(X*Y);
 
     auto result_buf = result.request();
     uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
 
-    //const uint16_t n = *(reinterpret_cast<const uint16_t *>(stream));
+    cout << "===reading pixel from stream===" << std::endl;
 
-    cout << "---reading pixel from stream---" << std::endl;
+    auto voidPtr = static_cast<void const *>(stream);
+    auto intPtr = static_cast<uint16_t const *>(voidPtr);
 
-    //for ( int i = 0 ; i < streamlen-1 ; i+=2 )
-    //for ( int i = 0 ; i < 49 ; i+=2 )
-    for ( int i = 0 ; i < 49 ; i++ )
-    {
-        /*
-        uint16_t resval = 0;
-        for (int i = 0; i < sizeof(uint16_t); ++i)
-        {
-            result_ptr[j] += stream[j+i] << (i * CHAR_BIT);        //little endian
-        }
-        */
-        //std::cout << i << " = " << std::bitset<8>(stream[i])  << std::endl;
-        result_ptr[i] = to_uint16(stream[i]);
-        //result_ptr[i] = *n[i]
-        //result_ptr[i] = (stream[i] << 8) | stream[i+1] ;
-        cout << result_ptr[i] << endl;
+    for (size_t i = 0; i < streamlen / sizeof(uint16_t); ++i) {
+        result_ptr[i] = intPtr[i];
     }
 
     return result;
@@ -224,7 +253,7 @@ prints byte value at each position in indexes_p
     auto result_buf = result.request();
     uint64_t *result_ptr = (uint64_t *) result_buf.ptr;
 
-    cout << "---generating chan/det array---" << std::endl;
+    cout << "===generating chan/det array===" << std::endl;
     for (size_t idx = 0; idx < X; idx++)
         for (size_t idy = 0; idy < Y; idy++)
             result_ptr[idx*Y + idy] = idx;
@@ -268,5 +297,6 @@ PYBIND11_MODULE(parsercore_lib, m) {
         m.def("indexret", &indexret, "indexret array");
         m.def("returnchanarray", &returnchanarray, "returnchanarray");
         m.def("printbyte", &printbyte, "printbyte");
-        m.def("readpixel", &readpixel, "readpixel");
+        m.def("printpixel", &printpixel, "printpixel");
+        m.def("readpixel1D", &readpixel1D, "readpixel1D");
 }
