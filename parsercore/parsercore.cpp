@@ -23,9 +23,11 @@ namespace py = pybind11;
 using std::cout;
 using std::endl;
 
+bool const DEBUG = false;
 int const NCHAN = 4096;
 int const NDET = 2;
 int const PXHEADERLEN = 16;
+int const NDIM = 3;
 
 
 //byte to int
@@ -264,14 +266,15 @@ WARNING: currently system MUST BE little-endian
         else
         { result_vector[channel] = uintPtr[i]; }
     }
-
-    for (size_t i = 140; i < 160; i++)
+    if (DEBUG == true)
     {
-        cout << "inner " << i << "  " << result_vector[i] << endl;
+        for (size_t i = 140; i < 160; i++)
+        {
+            cout << "inner " << i << "  " << result_vector[i] << endl;
+        }
+    
+        cout << "----BREAK----" << endl;
     }
-
-   cout << "----BREAK----" << endl;
-
     return result_vector;
 }
 
@@ -307,83 +310,58 @@ WARNING: currently system MUST BE little-endian
     else  {
         throw std::runtime_error("indexes and pixel-length arrays are not the same shape");
     }
-    cout << "----DIMS-" << npixels << "--" << endl;
+    if (DEBUG == true) { cout << "----DIMS-" << npixels << "--" << endl; }
 
     size_t npoints= npixels*NDET*NCHAN;
     size_t nspectra=npixels*NDET;
 
     //initialise and zero result array
     py::array_t<uint16_t> temp_result = py::array_t<uint16_t>(npixels);
-    //auto full_result_info = full_result.request();
-    //uint16_t *full_result_ptr = static_cast<uint16_t *>(full_result_info.ptr);
 
     //init temp result array 
-
     std::vector<uint16_t> full_result(npixels*NDET*NCHAN, 5);
     std::vector<uint16_t> working_result;
 
-    //for ( size_t i = 0; i < npixels; i++ )
-    const size_t PXMAX = 5;
-    //for ( size_t i = 0; i < PXMAX; i++ )
     for ( size_t i = 0; i < nspectra; i++ )    
     {
-        cout << "----INNER-" << i << "--" << endl;
-        uint64_t index = index_ptr[i] + PXHEADERLEN;
-        uint16_t length = pxlens_ptr[i] - PXHEADERLEN;
-        //uint64_t nextstart = index_ptr[i+1];
-        //uint64_t currend = index+length;
-        //cout << "index " << index_ptr[i] << " len " << pxlens_ptr[i] << endl;
-        //cout << "nextstart " << nextstart << " currend " << currend << endl;        
-        const char* substream = stream + index;
-        //cout << index_ptr[i] << endl;
-        //py::array_t<uint16_t> 
-        working_result = readpixelcounts(substream, length);
-        cout << "----OUTER-" << i << "--" << endl;
+        if (DEBUG == true) { cout << "----INNER-" << i << "--" << endl; }
 
-        for (size_t j = 140; j < 160; j++)
-        {
-            cout << "outer " << j << "  " << working_result[j] << endl;
+        uint64_t index = index_ptr[i] + PXHEADERLEN;
+        uint16_t length = pxlens_ptr[i] - PXHEADERLEN;  
+        const char* substream = stream + index;
+        working_result = readpixelcounts(substream, length);
+
+        if (DEBUG == true) 
+        { 
+            cout << "----OUTER-" << i << "--" << endl; 
+
+            for (size_t j = 140; j < 160; j++)
+            {
+                cout << "outer " << j << "  " << working_result[j] << endl;
+            }
         }
         std::copy(working_result.begin(), working_result.end(), full_result.begin()+i*NCHAN);
-
     }
 
-    //setup numpy array
-    //shape, strides, pointer
-//    std::vector<ssize_t> result_shape(ndim+1);
-    /*
-    std::vector<ssize_t> result_shape(1);
-    result_shape[0] = npixels*NDET*NCHAN;
-    //result_shape[0] = NDET;
-    //result_shape[0] = NCHAN;
-    std::vector<ssize_t> result_strides(1);
-    result_strides[0] = sizeof(uint16_t);    
-    uint16_t* pointer=full_result.data();
-    */
-    
-    std::vector<ssize_t> result_shape(3);
+    //initialise python export params
+    //init shape
+    std::vector<ssize_t> result_shape(NDIM);
     result_shape[0] = npixels;
     result_shape[1] = NDET;
     result_shape[2] = NCHAN;
-    std::vector<ssize_t> result_strides(3);
+    std::vector<ssize_t> result_strides(NDIM);
+    //init strides
     result_strides[0] = result_shape[1]*result_shape[2]*sizeof(uint16_t);
     result_strides[1] = result_shape[2]*sizeof(uint16_t);
     result_strides[2] = sizeof(uint16_t);        
     uint16_t* pointer=full_result.data();
-     
 
-    cout << "NPX " << npixels << endl;
-    cout << "NPX " << result_shape[0] << endl;    
-    cout << "NPX " << result_strides[0] << endl;        
-    //return temp_result;
-
+    //return as python object  
     return pybind11::array_t<uint16_t>(
         result_shape,
         result_strides,
         pointer); 
 }
-
-
 
 /* Wrapping routines with PyBind */
 PYBIND11_MODULE(parsercore_lib, m) {
