@@ -285,8 +285,6 @@ returns 1D numpy array of counts, w/ missing = 0
 WARNING: currently system MUST BE little-endian 
 */
 {
-    size_t npixels = 1; //start with 1 pixel for *=
-
     //set up pointers and info for input np arrays
     auto index_info = indexlist.request();
     uint64_t *index_ptr = static_cast<uint64_t *>(index_info.ptr);
@@ -296,22 +294,20 @@ WARNING: currently system MUST BE little-endian
     uint16_t *pxlens_ptr = static_cast<uint16_t *>(pxlens_info.ptr);
     std::vector<ssize_t> pxlens_shape = pxlens_info.shape;
 
+    size_t ndim;
+    size_t npixels;
+
     //check shapes of pxlens and indexes match
     //get dimensionality and n. pixels 
     if ( index_shape == pxlens_shape ) {
-
-        size_t ndim = index_shape.size(); 
-
-        for ( size_t i=0; i < ndim; i++ ) {
-            npixels *= index_shape[i];
-        }
-        cout << "----NPIXELS----" << endl;
-        cout << npixels << endl;
+        ndim = index_shape.size(); 
+        npixels = index_shape[0];
     }
+
     else  {
         throw std::runtime_error("indexes and pixel-length arrays are not the same shape");
     }
-
+    cout << "----DIMS-" << npixels << "--" << endl;
     //initialise and zero result array
     py::array_t<uint16_t> temp_result = py::array_t<uint16_t>(npixels);
     //auto full_result_info = full_result.request();
@@ -324,7 +320,8 @@ WARNING: currently system MUST BE little-endian
 
     //for ( size_t i = 0; i < npixels; i++ )
     const size_t PXMAX = 5;
-    for ( size_t i = 0; i < PXMAX; i++ )
+    //for ( size_t i = 0; i < PXMAX; i++ )
+    for ( size_t i = 0; i < npixels; i++ )    
     {
         cout << "----INNER-" << i << "--" << endl;
         uint64_t index = index_ptr[i] + PXHEADERLEN;
@@ -345,14 +342,48 @@ WARNING: currently system MUST BE little-endian
         }
         std::copy(working_result.begin(), working_result.end(), full_result.begin()+i*NCHAN);
     }
+    /*
     size_t offset=(PXMAX-1)*NCHAN;
     cout << "----OUTER FINAL-" << PXMAX-1 << "--" << offset << endl;
     for (size_t i = offset+140; i < offset+160; i++)
     {
         cout << "outer " << i << "  " << full_result[i] << endl;
     }
+    */
 
-    return temp_result;
+    //setup numpy array
+    //shape, strides, pointer
+//    std::vector<ssize_t> result_shape(ndim+1);
+    std::vector<ssize_t> result_shape(1);
+    result_shape[0] = npixels*NDET*NCHAN;
+    //result_shape[0] = NDET;
+    //result_shape[0] = NCHAN;
+    std::vector<ssize_t> result_strides(1);
+    result_strides[0] = sizeof(uint16_t);    
+    uint16_t* pointer=full_result.data();
+    /*
+    std::vector<ssize_t> result_shape(1);
+    result_shape[0] = npixels*NDET*NCHAN;
+    result_shape[1] = NDET;
+    result_shape[2] = NCHAN;
+    std::vector<ssize_t> result_strides(1);
+    result_strides[0] = result_shape[1]*result_shape[2]*sizeof(uint16_t);
+    result_strides[1] = result_shape[2]*sizeof(uint16_t);
+    result_strides[2] = sizeof(uint16_t);        
+    uint16_t* pointer=full_result.data();
+    */ 
+
+
+
+    cout << "NPX " << npixels << endl;
+    cout << "NPX " << result_shape[0] << endl;    
+    cout << "NPX " << result_strides[0] << endl;        
+    //return temp_result;
+
+    return pybind11::array_t<uint16_t>(
+        result_shape,
+        result_strides,
+        pointer); 
 }
 
 

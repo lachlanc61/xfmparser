@@ -121,9 +121,12 @@ def main():
     pxlen=np.load("datasets/ts2_submap_pxlen.npy")
     data=np.load("./datasets/ts2_submap_data.npy")
 
+
+
     if len(indexlist) != len(pxlen):
         raise ValueError("mismatch between index and pixel lengths")
 
+    npx=len(indexlist)
     indexlist_flat=indexlist.flatten()
     data_flat=data.flatten()
 
@@ -132,14 +135,16 @@ def main():
     with open(f, mode='rb') as fi:
         stream = fi.read() 
 
-    recieve=np.zeros((len(indexlist),NDET,NCHAN),dtype=np.uint16)
+    recieve=np.zeros((npx,NDET,NCHAN),dtype=np.uint16)
 
     print(indexlist.shape[0])
 
-    parserout = np.zeros(NCHAN, dtype=np.uint16)
+    parserout = np.zeros(npx*NDET*NCHAN, dtype=np.uint16)
 
     print("---READ BUFFER---")
     parserout = parsercore.readbuffer(indexlist, pxlen, stream, len(stream))
+
+    print(parserout[140:160])
 
     #print(indexlist[0:10])
     #print(pxlen[0:10])
