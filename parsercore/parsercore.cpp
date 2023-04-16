@@ -308,6 +308,10 @@ WARNING: currently system MUST BE little-endian
         throw std::runtime_error("indexes and pixel-length arrays are not the same shape");
     }
     cout << "----DIMS-" << npixels << "--" << endl;
+
+    size_t npoints= npixels*NDET*NCHAN;
+    size_t nspectra=npixels*NDET;
+
     //initialise and zero result array
     py::array_t<uint16_t> temp_result = py::array_t<uint16_t>(npixels);
     //auto full_result_info = full_result.request();
@@ -321,7 +325,7 @@ WARNING: currently system MUST BE little-endian
     //for ( size_t i = 0; i < npixels; i++ )
     const size_t PXMAX = 5;
     //for ( size_t i = 0; i < PXMAX; i++ )
-    for ( size_t i = 0; i < npixels; i++ )    
+    for ( size_t i = 0; i < nspectra; i++ )    
     {
         cout << "----INNER-" << i << "--" << endl;
         uint64_t index = index_ptr[i] + PXHEADERLEN;
@@ -341,19 +345,13 @@ WARNING: currently system MUST BE little-endian
             cout << "outer " << j << "  " << working_result[j] << endl;
         }
         std::copy(working_result.begin(), working_result.end(), full_result.begin()+i*NCHAN);
+
     }
-    /*
-    size_t offset=(PXMAX-1)*NCHAN;
-    cout << "----OUTER FINAL-" << PXMAX-1 << "--" << offset << endl;
-    for (size_t i = offset+140; i < offset+160; i++)
-    {
-        cout << "outer " << i << "  " << full_result[i] << endl;
-    }
-    */
 
     //setup numpy array
     //shape, strides, pointer
 //    std::vector<ssize_t> result_shape(ndim+1);
+    /*
     std::vector<ssize_t> result_shape(1);
     result_shape[0] = npixels*NDET*NCHAN;
     //result_shape[0] = NDET;
@@ -361,19 +359,18 @@ WARNING: currently system MUST BE little-endian
     std::vector<ssize_t> result_strides(1);
     result_strides[0] = sizeof(uint16_t);    
     uint16_t* pointer=full_result.data();
-    /*
-    std::vector<ssize_t> result_shape(1);
-    result_shape[0] = npixels*NDET*NCHAN;
+    */
+    
+    std::vector<ssize_t> result_shape(3);
+    result_shape[0] = npixels;
     result_shape[1] = NDET;
     result_shape[2] = NCHAN;
-    std::vector<ssize_t> result_strides(1);
+    std::vector<ssize_t> result_strides(3);
     result_strides[0] = result_shape[1]*result_shape[2]*sizeof(uint16_t);
     result_strides[1] = result_shape[2]*sizeof(uint16_t);
     result_strides[2] = sizeof(uint16_t);        
     uint16_t* pointer=full_result.data();
-    */ 
-
-
+     
 
     cout << "NPX " << npixels << endl;
     cout << "NPX " << result_shape[0] << endl;    

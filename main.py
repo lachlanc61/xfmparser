@@ -144,10 +144,13 @@ def main():
     print("---READ BUFFER---")
     parserout = parsercore.readbuffer(indexlist, pxlen, stream, len(stream))
 
-    print(parserout[140:160])
+    print(parserout[1000,0,140:160])
+    print(data[1000,0,140:160])
 
     #print(indexlist[0:10])
     #print(pxlen[0:10])
+
+    print(f"FINAL TEST: {np.all(np.isclose(parserout,data))}")
 
     print("---END---")
 
