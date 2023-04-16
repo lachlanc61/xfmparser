@@ -106,8 +106,8 @@ def main():
     out_1D = parsercore.readpixelcounts(stream, len(stream))
     print("---print converted 1D array from C++---")
     print(out_1D[144:155])
-    print(out_1D.dtype)
-    print(out_1D.shape)
+    #print(out_1D.dtype)
+    #print(out_1D.shape)
     target_1D = counts
     print("---print converted 1D array from Python---")    
     print(target_1D[144:155])
@@ -145,11 +145,6 @@ def main():
     #print(pxlen[0:10])
 
     print("---END---")
-
-
-
-
-
 
 
 

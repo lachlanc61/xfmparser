@@ -233,8 +233,7 @@ prints byte value at each position in indexes_p
     return result;
 }
 
-
-py::array_t<uint16_t> readpixelcounts(const char* stream, const uint64_t streamlen) 
+std::vector<uint16_t> readpixelcounts(const char* stream, const uint64_t streamlen) 
 /*
 reads pixeldata stream as:
     uint16(chan) uint16(counts)
@@ -243,18 +242,14 @@ returns 1D numpy array of counts, w/ missing = 0
 WARNING: currently system MUST BE little-endian 
 */
 {
-    //initialise result array and pointers
-    size_t X = NCHAN;   //no. channels
-
-    py::array_t<uint16_t> result = py::array_t<uint16_t>(X);
-    auto result_buf = result.request();
-    uint16_t *result_ptr = static_cast<uint16_t *>(result_buf.ptr);
+    //initialise result vector and pointers
+    std::vector<uint16_t> result_vector(NCHAN, 0);
 
     //zeroresult array
-    for (size_t i = 0; i < X; i++)
+    for (size_t i = 0; i < NCHAN; i++)
     {
         
-        result_ptr[i]=0;
+        result_vector[i]=0;
     }
 
     //setup conversion casts
@@ -267,20 +262,16 @@ WARNING: currently system MUST BE little-endian
         if ( i % sizeof(uint16_t) == 0 )
         { channel = uintPtr[i]; }
         else
-        { result_ptr[channel] = uintPtr[i]; }
+        { result_vector[channel] = uintPtr[i]; }
     }
 
     for (size_t i = 140; i < 160; i++)
     {
-        cout << "inner " << i << "  " << result_ptr[i] << endl;
+        cout << "inner " << i << "  " << result_vector[i] << endl;
     }
 
-
-    return result;
+    return result_vector;
 }
-
-
-
 
 
 py::array_t<uint16_t> readbuffer(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const char* stream, const int streamlen) 
@@ -319,25 +310,14 @@ WARNING: currently system MUST BE little-endian
         throw std::runtime_error("indexes and pixel-length arrays are not the same shape");
     }
 
-
     //initialise and zero result array
     py::array_t<uint16_t> full_result = py::array_t<uint16_t>(npixels*NDET*NCHAN);
     auto full_result_info = full_result.request();
     uint16_t *full_result_ptr = static_cast<uint16_t *>(full_result_info.ptr);
 
     //init temp result array 
-    py::array_t<uint16_t> working_result = py::array_t<uint16_t>(NCHAN);
-    auto working_result_info = working_result.request();
-    uint16_t *working_result_ptr = (uint16_t *) working_result_info.ptr;
 
-    cout << "INDEX 0" << endl;
-    cout << npixels << endl;
-    cout << index_ptr[0] << endl;
-    cout << "TYPES" << endl;
-    cout << stream[1161] << endl;
-    cout << typeid(stream).name() << endl;
-    cout << typeid(stream[1161]).name() << endl;
-
+    std::vector<uint16_t> working_result;
 
     cout << "----INNER----" << endl;
     //for ( size_t i = 0; i < npixels; i++ )
@@ -357,51 +337,11 @@ WARNING: currently system MUST BE little-endian
     cout << "----OUTER----" << endl;
     for (size_t i = 140; i < 160; i++)
     {
-        cout << "outer " << i << "  " << working_result_ptr[i] << endl;
+        cout << "outer " << i << "  " << working_result[i] << endl;
     }
 
-    return working_result;
+    return full_result;
 }
-
-/*
-    cout << "ndim " << index_buf.ndim << endl;
-    cout << "size " << index_buf.size << endl;
-    //cout << "shape 1 " << index_buf.shape << endl;
-    //cout << "shape 2 " << index_buf.strides_in << endl;
-
-    py::array_t<uint16_t> result = py::array_t<uint16_t>(npixels*Y*X);
-    auto result_buf = result.request();
-    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
-
-    for (size_t i = 0; i < X; i++)
-    {
-        
-        result_ptr[i]=0;
-    }
-
-    //setup conversion casts
-    auto voidPtr = static_cast<void const *>(stream);
-    auto uintPtr = static_cast<uint16_t const *>(voidPtr);
-
-    //fill result array from stream
-    uint16_t channel = NCHAN+1;    //init to value outside array JIC
-    for (size_t i = 0; i < streamlen / sizeof(uint16_t); ++i) {
-        if ( i % sizeof(uint16_t) == 0 )
-        { channel = uintPtr[i]; }
-        else
-        { result_ptr[channel] = uintPtr[i]; }
-    }
-
-    return result;
-}
-*/
-
-
-
-
-
-
-
 
 
 
