@@ -1,8 +1,12 @@
 #!/bin/bash
 
-result = $( python setup.py build_ext --build-lib=parsercore )
+python setup.py build_ext --build-lib=parsercore 
 
-if [[ $result == 0 ]];
+return=$?
+
+echo $return
+
+if [[ $return == 0 ]];
 then
     python main.py
 fi

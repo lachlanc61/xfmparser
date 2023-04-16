@@ -267,14 +267,12 @@ WARNING: currently system MUST BE little-endian
         if ( i % sizeof(uint16_t) == 0 )
         { channel = uintPtr[i]; }
         else
-        {   
-            cout << "i " << i << " " << uintPtr[i] << endl;
-            result_ptr[channel] = uintPtr[i]; }
+        { result_ptr[channel] = uintPtr[i]; }
     }
 
-    for (size_t i = 130; i < 150; i++)
+    for (size_t i = 140; i < 160; i++)
     {
-        cout << "inner " << result_ptr[i] << endl;
+        cout << "inner " << i << "  " << result_ptr[i] << endl;
     }
 
 
@@ -306,9 +304,9 @@ WARNING: currently system MUST BE little-endian
 
     //result array
     //py::array_t<uint16_t> result = py::array_t<uint16_t>(npixels*NDET*NCHAN);    
-    py::array_t<uint16_t> result0 = py::array_t<uint16_t>(npixels*NDET*NCHAN);
-    auto result_buf0 = result0.request();
-    uint16_t *result_ptr0 = (uint16_t *) result_buf0.ptr;
+    py::array_t<uint16_t> full_result = py::array_t<uint16_t>(npixels*NDET*NCHAN);
+    auto full_result_buf = full_result.request();
+    uint16_t *full_result_ptr = (uint16_t *) full_result_buf.ptr;
 
 
     py::array_t<uint16_t> result = py::array_t<uint16_t>(NCHAN);
@@ -325,6 +323,7 @@ WARNING: currently system MUST BE little-endian
     cout << typeid(stream).name() << endl;
     cout << typeid(stream[1161]).name() << endl;
 
+    cout << "----INNER----" << endl;
     //for ( size_t i = 0; i < npixels; i++ )
     for ( size_t i = 0; i < 1; i++ )
     {
@@ -338,10 +337,10 @@ WARNING: currently system MUST BE little-endian
         //cout << index_ptr[i] << endl;
         py::array_t<uint16_t> result = readpixelcounts(substream, length);
     }
-
-    for (size_t i = 130; i < 150; i++)
+    cout << "----OUTER----" << endl;
+    for (size_t i = 140; i < 160; i++)
     {
-        cout << "outer " << result_ptr[i] << endl;
+        cout << "outer " << i << "  " << result_ptr[i] << endl;
     }
 
     return result;
