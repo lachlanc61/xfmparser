@@ -283,7 +283,7 @@ WARNING: currently system MUST BE little-endian
 
 
 
-py::array_t<uint16_t> readbuffer(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const int npixels, const char* stream, const int streamlen) 
+py::array_t<uint16_t> readbuffer(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const char* stream, const int streamlen) 
 /*
 reads pixeldata stream as:
     uint16(chan) uint16(counts)
@@ -292,31 +292,44 @@ returns 1D numpy array of counts, w/ missing = 0
 WARNING: currently system MUST BE little-endian 
 */
 {
-    //initialise and zero result array
-    size_t Y = NDET;
-    size_t X = NCHAN;   //no. channels
+    size_t npixels = 1; //start with 1 pixel for *=
 
+    //set up pointers and info for input np arrays
     auto index_info = indexlist.request();
     uint64_t *index_ptr = static_cast<uint64_t *>(index_info.ptr);
+    std::vector<ssize_t> index_shape = index_info.shape;
 
     auto pxlens_info = pxlens.request();
     uint16_t *pxlens_ptr = static_cast<uint16_t *>(pxlens_info.ptr);
+    std::vector<ssize_t> pxlens_shape = pxlens_info.shape;
 
-    //result array
-    //py::array_t<uint16_t> result = py::array_t<uint16_t>(npixels*NDET*NCHAN);    
+    //check shapes of pxlens and indexes match
+    //get dimensionality and n. pixels 
+    if ( index_shape == pxlens_shape ) {
+
+        size_t ndim = index_shape.size(); 
+
+        for ( size_t i=0; i < ndim; i++ ) {
+            npixels *= index_shape[i];
+        }
+        cout << "----NPIXELS----" << endl;
+        cout << npixels << endl;
+    }
+    else  {
+        throw std::runtime_error("indexes and pixel-length arrays are not the same shape");
+    }
+
+
+    //initialise and zero result array
     py::array_t<uint16_t> full_result = py::array_t<uint16_t>(npixels*NDET*NCHAN);
     auto full_result_info = full_result.request();
     uint16_t *full_result_ptr = static_cast<uint16_t *>(full_result_info.ptr);
 
-    std::vector<ssize_t> shape = full_result_info.shape;
-
-
+    //init temp result array 
     py::array_t<uint16_t> working_result = py::array_t<uint16_t>(NCHAN);
     auto working_result_info = working_result.request();
     uint16_t *working_result_ptr = (uint16_t *) working_result_info.ptr;
 
-
-    //cout << index_ptr[0] << endl;
     cout << "INDEX 0" << endl;
     cout << npixels << endl;
     cout << index_ptr[0] << endl;

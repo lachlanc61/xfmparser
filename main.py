@@ -139,7 +139,7 @@ def main():
     parserout = np.zeros(NCHAN, dtype=np.uint16)
 
     print("---READ BUFFER---")
-    parserout = parsercore.readbuffer(indexlist, pxlen, len(indexlist), stream, len(stream))
+    parserout = parsercore.readbuffer(indexlist, pxlen, stream, len(stream))
 
     #print(indexlist[0:10])
     #print(pxlen[0:10])
