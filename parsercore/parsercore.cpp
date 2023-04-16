@@ -270,6 +270,8 @@ WARNING: currently system MUST BE little-endian
         cout << "inner " << i << "  " << result_vector[i] << endl;
     }
 
+   cout << "----BREAK----" << endl;
+
     return result_vector;
 }
 
@@ -311,18 +313,20 @@ WARNING: currently system MUST BE little-endian
     }
 
     //initialise and zero result array
-    py::array_t<uint16_t> full_result = py::array_t<uint16_t>(npixels*NDET*NCHAN);
-    auto full_result_info = full_result.request();
-    uint16_t *full_result_ptr = static_cast<uint16_t *>(full_result_info.ptr);
+    py::array_t<uint16_t> temp_result = py::array_t<uint16_t>(npixels);
+    //auto full_result_info = full_result.request();
+    //uint16_t *full_result_ptr = static_cast<uint16_t *>(full_result_info.ptr);
 
     //init temp result array 
 
+    std::vector<uint16_t> full_result(npixels*NDET*NCHAN, 5);
     std::vector<uint16_t> working_result;
 
-    cout << "----INNER----" << endl;
     //for ( size_t i = 0; i < npixels; i++ )
-    for ( size_t i = 0; i < 1; i++ )
+    const size_t PXMAX = 5;
+    for ( size_t i = 0; i < PXMAX; i++ )
     {
+        cout << "----INNER-" << i << "--" << endl;
         uint64_t index = index_ptr[i] + PXHEADERLEN;
         uint16_t length = pxlens_ptr[i] - PXHEADERLEN;
         //uint64_t nextstart = index_ptr[i+1];
@@ -333,14 +337,22 @@ WARNING: currently system MUST BE little-endian
         //cout << index_ptr[i] << endl;
         //py::array_t<uint16_t> 
         working_result = readpixelcounts(substream, length);
+        cout << "----OUTER-" << i << "--" << endl;
+
+        for (size_t j = 140; j < 160; j++)
+        {
+            cout << "outer " << j << "  " << working_result[j] << endl;
+        }
+        std::copy(working_result.begin(), working_result.end(), full_result.begin()+i*NCHAN);
     }
-    cout << "----OUTER----" << endl;
-    for (size_t i = 140; i < 160; i++)
+    size_t offset=(PXMAX-1)*NCHAN;
+    cout << "----OUTER FINAL-" << PXMAX-1 << "--" << offset << endl;
+    for (size_t i = offset+140; i < offset+160; i++)
     {
-        cout << "outer " << i << "  " << working_result[i] << endl;
+        cout << "outer " << i << "  " << full_result[i] << endl;
     }
 
-    return full_result;
+    return temp_result;
 }
 
 
