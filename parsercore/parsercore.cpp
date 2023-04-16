@@ -83,7 +83,7 @@ unsigned long indexret(py::array_t<uint64_t> indexes)
 	auto indexes_buf = indexes.request();
 
 	/*  variables */
-	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
+	uint64_t *indexes_p = static_cast<uint64_t *>(indexes_buf.ptr);
 	size_t indexes_size = indexes_buf.shape[0];
 
     // vectors are declared via start and end+1 pointers
@@ -130,7 +130,7 @@ prints byte value at each position in indexes_p
 	auto indexes_buf = indexes.request();
 
 	/*  variables */
-	uint64_t *indexes_p = (uint64_t *) indexes_buf.ptr;
+	uint64_t *indexes_p = static_cast<uint64_t *>(indexes_buf.ptr);
 	size_t indexes_size = indexes_buf.shape[0];
 
     cout << "===C++ values===" << std::endl;
@@ -191,7 +191,7 @@ prints byte value at each position in indexes_p
     py::array_t<uint64_t> result = py::array_t<uint64_t>(X*Y);
 
     auto result_buf = result.request();
-    uint64_t *result_ptr = (uint64_t *) result_buf.ptr;
+    uint64_t *result_ptr = static_cast<uint64_t *>(result_buf.ptr);
 
     cout << "===generating chan/det array===" << std::endl;
     for (size_t idx = 0; idx < X; idx++)
@@ -219,7 +219,7 @@ prints byte value at each position in indexes_p
     py::array_t<uint16_t> result = py::array_t<uint16_t>(X*Y);
 
     auto result_buf = result.request();
-    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
+    uint16_t *result_ptr = static_cast<uint16_t *>(result_buf.ptr);
 
     cout << "===reading pixel from stream===" << std::endl;
 
@@ -248,7 +248,7 @@ WARNING: currently system MUST BE little-endian
 
     py::array_t<uint16_t> result = py::array_t<uint16_t>(X);
     auto result_buf = result.request();
-    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
+    uint16_t *result_ptr = static_cast<uint16_t *>(result_buf.ptr);
 
     //zeroresult array
     for (size_t i = 0; i < X; i++)
@@ -296,22 +296,24 @@ WARNING: currently system MUST BE little-endian
     size_t Y = NDET;
     size_t X = NCHAN;   //no. channels
 
-    auto index_buf = indexlist.request();
-    uint64_t *index_ptr = (uint64_t *) index_buf.ptr;
+    auto index_info = indexlist.request();
+    uint64_t *index_ptr = static_cast<uint64_t *>(index_info.ptr);
 
-    auto pxlens_buf = pxlens.request();
-    uint16_t *pxlens_ptr = (uint16_t *) pxlens_buf.ptr;
+    auto pxlens_info = pxlens.request();
+    uint16_t *pxlens_ptr = static_cast<uint16_t *>(pxlens_info.ptr);
 
     //result array
     //py::array_t<uint16_t> result = py::array_t<uint16_t>(npixels*NDET*NCHAN);    
     py::array_t<uint16_t> full_result = py::array_t<uint16_t>(npixels*NDET*NCHAN);
-    auto full_result_buf = full_result.request();
-    uint16_t *full_result_ptr = (uint16_t *) full_result_buf.ptr;
+    auto full_result_info = full_result.request();
+    uint16_t *full_result_ptr = static_cast<uint16_t *>(full_result_info.ptr);
+
+    std::vector<ssize_t> shape = full_result_info.shape;
 
 
-    py::array_t<uint16_t> result = py::array_t<uint16_t>(NCHAN);
-    auto result_buf = result.request();
-    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
+    py::array_t<uint16_t> working_result = py::array_t<uint16_t>(NCHAN);
+    auto working_result_info = working_result.request();
+    uint16_t *working_result_ptr = (uint16_t *) working_result_info.ptr;
 
 
     //cout << index_ptr[0] << endl;
@@ -322,6 +324,7 @@ WARNING: currently system MUST BE little-endian
     cout << stream[1161] << endl;
     cout << typeid(stream).name() << endl;
     cout << typeid(stream[1161]).name() << endl;
+
 
     cout << "----INNER----" << endl;
     //for ( size_t i = 0; i < npixels; i++ )
@@ -335,15 +338,16 @@ WARNING: currently system MUST BE little-endian
         //cout << "nextstart " << nextstart << " currend " << currend << endl;        
         const char* substream = stream + index;
         //cout << index_ptr[i] << endl;
-        py::array_t<uint16_t> result = readpixelcounts(substream, length);
+        //py::array_t<uint16_t> 
+        working_result = readpixelcounts(substream, length);
     }
     cout << "----OUTER----" << endl;
     for (size_t i = 140; i < 160; i++)
     {
-        cout << "outer " << i << "  " << result_ptr[i] << endl;
+        cout << "outer " << i << "  " << working_result_ptr[i] << endl;
     }
 
-    return result;
+    return working_result;
 }
 
 /*
