@@ -174,6 +174,36 @@ void printpixel(const char* stream, const int streamlen)
 }
 
 
+
+py::array_t<uint64_t> returnchanarray(const py::array_t<uint64_t> indexes, const char* stream, int streamlen) 
+/*
+recieves numpy array of indexes and bytestream
+prints byte value at each position in indexes_p
+*/
+{
+
+    /*  read input arrays buffer_info */
+	auto indexes_buf = indexes.request();
+
+    size_t X = NCHAN;
+    size_t Y = NDET;
+
+    py::array_t<uint64_t> result = py::array_t<uint64_t>(X*Y);
+
+    auto result_buf = result.request();
+    uint64_t *result_ptr = (uint64_t *) result_buf.ptr;
+
+    cout << "===generating chan/det array===" << std::endl;
+    for (size_t idx = 0; idx < X; idx++)
+        for (size_t idy = 0; idy < Y; idy++)
+            result_ptr[idx*Y + idy] = idx;
+
+    result.resize({X,Y});
+
+    return result;
+}
+
+
 py::array_t<uint16_t> readpixel1D(const char* stream, const int streamlen) 
 /*
 recieves numpy array of indexes and bytestream
@@ -204,7 +234,58 @@ prints byte value at each position in indexes_p
 }
 
 
-py::array_t<uint16_t> readpixelcounts(const char* stream, const int streamlen) 
+py::array_t<uint16_t> readpixelcounts(const char* stream, const uint64_t streamlen) 
+/*
+reads pixeldata stream as:
+    uint16(chan) uint16(counts)
+returns 1D numpy array of counts, w/ missing = 0
+
+WARNING: currently system MUST BE little-endian 
+*/
+{
+    //initialise result array and pointers
+    size_t X = NCHAN;   //no. channels
+
+    py::array_t<uint16_t> result = py::array_t<uint16_t>(X);
+    auto result_buf = result.request();
+    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
+
+    //zeroresult array
+    for (size_t i = 0; i < X; i++)
+    {
+        
+        result_ptr[i]=0;
+    }
+
+    //setup conversion casts
+    auto voidPtr = static_cast<void const *>(stream);
+    auto uintPtr = static_cast<uint16_t const *>(voidPtr);
+
+    //fill result array from stream
+    uint16_t channel = NCHAN+1;    //init to value outside array JIC
+    for (size_t i = 0; i < streamlen / sizeof(uint16_t); ++i) {
+        if ( i % sizeof(uint16_t) == 0 )
+        { channel = uintPtr[i]; }
+        else
+        {   
+            cout << "i " << i << " " << uintPtr[i] << endl;
+            result_ptr[channel] = uintPtr[i]; }
+    }
+
+    for (size_t i = 130; i < 150; i++)
+    {
+        cout << "inner " << result_ptr[i] << endl;
+    }
+
+
+    return result;
+}
+
+
+
+
+
+py::array_t<uint16_t> readbuffer(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const int npixels, const char* stream, const int streamlen) 
 /*
 reads pixeldata stream as:
     uint16(chan) uint16(counts)
@@ -214,9 +295,65 @@ WARNING: currently system MUST BE little-endian
 */
 {
     //initialise and zero result array
+    size_t Y = NDET;
     size_t X = NCHAN;   //no. channels
 
-    py::array_t<uint16_t> result = py::array_t<uint16_t>(X);
+    auto index_buf = indexlist.request();
+    uint64_t *index_ptr = (uint64_t *) index_buf.ptr;
+
+    auto pxlens_buf = pxlens.request();
+    uint16_t *pxlens_ptr = (uint16_t *) pxlens_buf.ptr;
+
+    //result array
+    //py::array_t<uint16_t> result = py::array_t<uint16_t>(npixels*NDET*NCHAN);    
+    py::array_t<uint16_t> result0 = py::array_t<uint16_t>(npixels*NDET*NCHAN);
+    auto result_buf0 = result0.request();
+    uint16_t *result_ptr0 = (uint16_t *) result_buf0.ptr;
+
+
+    py::array_t<uint16_t> result = py::array_t<uint16_t>(NCHAN);
+    auto result_buf = result.request();
+    uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
+
+
+    //cout << index_ptr[0] << endl;
+    cout << "INDEX 0" << endl;
+    cout << npixels << endl;
+    cout << index_ptr[0] << endl;
+    cout << "TYPES" << endl;
+    cout << stream[1161] << endl;
+    cout << typeid(stream).name() << endl;
+    cout << typeid(stream[1161]).name() << endl;
+
+    //for ( size_t i = 0; i < npixels; i++ )
+    for ( size_t i = 0; i < 1; i++ )
+    {
+        uint64_t index = index_ptr[i] + PXHEADERLEN;
+        uint16_t length = pxlens_ptr[i] - PXHEADERLEN;
+        //uint64_t nextstart = index_ptr[i+1];
+        //uint64_t currend = index+length;
+        //cout << "index " << index_ptr[i] << " len " << pxlens_ptr[i] << endl;
+        //cout << "nextstart " << nextstart << " currend " << currend << endl;        
+        const char* substream = stream + index;
+        //cout << index_ptr[i] << endl;
+        py::array_t<uint16_t> result = readpixelcounts(substream, length);
+    }
+
+    for (size_t i = 130; i < 150; i++)
+    {
+        cout << "outer " << result_ptr[i] << endl;
+    }
+
+    return result;
+}
+
+/*
+    cout << "ndim " << index_buf.ndim << endl;
+    cout << "size " << index_buf.size << endl;
+    //cout << "shape 1 " << index_buf.shape << endl;
+    //cout << "shape 2 " << index_buf.strides_in << endl;
+
+    py::array_t<uint16_t> result = py::array_t<uint16_t>(npixels*Y*X);
     auto result_buf = result.request();
     uint16_t *result_ptr = (uint16_t *) result_buf.ptr;
 
@@ -241,37 +378,16 @@ WARNING: currently system MUST BE little-endian
 
     return result;
 }
-
-
-
-
-py::array_t<uint64_t> returnchanarray(const py::array_t<uint64_t> indexes, const char* stream, int streamlen) 
-/*
-recieves numpy array of indexes and bytestream
-prints byte value at each position in indexes_p
 */
-{
 
-    /*  read input arrays buffer_info */
-	auto indexes_buf = indexes.request();
 
-    size_t X = NCHAN;
-    size_t Y = NDET;
 
-    py::array_t<uint64_t> result = py::array_t<uint64_t>(X*Y);
 
-    auto result_buf = result.request();
-    uint64_t *result_ptr = (uint64_t *) result_buf.ptr;
 
-    cout << "===generating chan/det array===" << std::endl;
-    for (size_t idx = 0; idx < X; idx++)
-        for (size_t idy = 0; idy < Y; idy++)
-            result_ptr[idx*Y + idy] = idx;
 
-    result.resize({X,Y});
 
-    return result;
-}
+
+
 
 /* Wrapping routines with PyBind */
 PYBIND11_MODULE(parsercore_lib, m) {
@@ -284,4 +400,5 @@ PYBIND11_MODULE(parsercore_lib, m) {
         m.def("printpixel", &printpixel, "printpixel");
         m.def("readpixel1D", &readpixel1D, "readpixel1D");
         m.def("readpixelcounts", &readpixelcounts, "readpixelcounts");        
+        m.def("readbuffer", &readbuffer, "readbuffer");   
 }
