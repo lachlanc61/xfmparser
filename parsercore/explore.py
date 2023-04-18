@@ -2,6 +2,8 @@ import parsercore.parsercore_lib as parsercore
 import numpy as np
 import sys
 
+#common to all, should definitely be in a yaml or similar
+
 BYTEORDER='little'
 NCHAN=4096
 NDET=2
