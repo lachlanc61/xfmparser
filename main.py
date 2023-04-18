@@ -58,7 +58,7 @@ def demo():
     print(f"expected:   {data[1000,0,140:160]}")
     print(f"result:     {parserout[1000,0,140:160]}")
 
-    print(f"DATA COORECT: {np.all(np.isclose(parserout,data))}")
+    print(f"DATA CORRECT: {np.all(np.isclose(parserout,data))}")
 
     print("---END---")
 
