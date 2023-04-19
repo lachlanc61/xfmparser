@@ -27,7 +27,7 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'parsercore_lib',
+        'parsercore_lib2',
         sources=['parsercore/parsercore.cpp'],
         include_dirs=[
             # Path to pybind11 headers
@@ -105,10 +105,10 @@ setup(
     version=__version__,
     author='Lachlan Casey',
     author_email='lachlanc.612@gmail.com',
-    description='C++ parser for CSIRO/IXRF .GeoPIXE format',
+    description='C++ parser for XFM map CSIRO/IXRF format',
     long_description='',
     ext_modules=ext_modules,
-    install_requires=['pybind11==2.10.4' 'numpy==1.23.5'],
+    install_requires=['pybind11==2.10.4', 'numpy==1.23.5'],
     cmdclass={'build_ext': BuildExt},
     zip_safe=False,
 )

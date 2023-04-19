@@ -25,7 +25,77 @@ int const NCHAN = 4096;
 int const NDET = 2;
 int const PXHEADERLEN = 16;
 int const NDIM = 3;
+std::string const VERSION = "0.0.1";
 
+bool is_big_endian(void)
+/*
+checks endianness of system
+*/
+{
+    union {
+        uint32_t i;
+        char c[4];
+    } binary = {0x01020304};
+
+    return binary.c[0] == 1;
+}
+
+bool check_system()
+/*
+checks system compatability
+*/
+{
+    if ( is_big_endian() )
+    {
+        throw std::runtime_error("is not compatible with big-endian system byte-order");
+        //"v " + VERSION + 
+    }
+    else
+    {
+        return true;
+    }
+}
+
+#define C_CONTIGUOUS py::detail::npy_api::constants::NPY_ARRAY_C_CONTIGUOUS_
+
+bool check_nparray(const py::array nparray)
+/*
+checks array compatability
+*/
+{
+
+    if (!(C_CONTIGUOUS == (nparray.flags() & C_CONTIGUOUS))) {
+        throw std::runtime_error("numpy array not C-contiguous");
+    }
+    else
+    {
+        return true;
+    }
+
+    //alternative: cast F-contig to C-contig:
+    // Actual casting, notice that type needs to be known and adding `c_style` is required to force memory alignment
+    //auto c_array = nparray.cast<py::array_t<double, py::array::c_style | py::array::forcecast>>();
+
+}
+
+bool check_inputs(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens)
+/*
+check the inputs for compatability
+*/
+{
+    bool system = check_system();
+    bool np1 = check_nparray(indexlist);
+    bool np2 = check_nparray(pxlens);
+
+    if (system && np1 && np2)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 std::vector<uint16_t> readpixelcounts(const char* stream, const uint64_t streamlen) 
 /*
@@ -80,6 +150,9 @@ returns 1D numpy array of counts, w/ missing = 0
 WARNING: currently system MUST BE little-endian 
 */
 {
+    //check inputs and system for compatability
+    bool accepted = check_inputs(indexlist, pxlens);
+
     //set up pointers and info for input np arrays
     
     //index array
