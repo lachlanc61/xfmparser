@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python setup.py build_ext --build-lib=parsercore 
+python setup.py build_ext --build-lib=src 
 
 return=$?
 

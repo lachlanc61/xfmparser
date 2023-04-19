@@ -1,4 +1,4 @@
-import parsercore.parsercore_lib as parsercore
+import parsercore_lib as parsercore
 import numpy as np
 import sys
 

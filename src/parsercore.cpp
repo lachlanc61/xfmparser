@@ -234,7 +234,7 @@ WARNING: currently system MUST BE little-endian
 }
 
 /* Wrapping routines with PyBind */
-PYBIND11_MODULE(parsercore_lib, m) {
+PYBIND11_MODULE(parsercore, m) {
 	    m.doc() = ""; // optional module docstring
         m.def("readpixelcounts", &readpixelcounts, "readpixelcounts");        
         m.def("readstream", &readstream, "readstream");   
