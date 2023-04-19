@@ -18,8 +18,8 @@ def parse( indexlist, pxlen, stream: bytes):
     if BYTEORDER != sys.byteorder:
         raise EnvironmentError("FATAL: System byteorder differs from data byteorder, C++ pixel extraction will fail")
 
-    if len(indexlist) != len(pxlen):
-        raise ValueError("mismatch between index and pixel lengths")
+    #if len(indexlist) != len(pxlen):
+    #    raise ValueError("mismatch between index and pixel lengths")
 
     if indexlist.dtype != np.uint64 or pxlen.dtype != np.uint16:
         raise ValueError("invalid data types for index and/or pixel length ndarrays")
@@ -52,6 +52,10 @@ def demo():
     print(f"pixels loaded: {indexlist.shape[0]}")
 
     parserout = np.zeros(npx*NDET*NCHAN, dtype=np.uint16)
+    parserout = np.zeros(npx*NDET*NCHAN, dtype=np.uint16)
+
+
+
 
     print("---READ IN DATA---")
     parserout = parse(indexlist, pxlen, stream)
@@ -60,6 +64,34 @@ def demo():
     print(f"result:     {parserout[1000,0,140:160]}")
 
     print(f"DATA CORRECT: {np.all(np.isclose(parserout,data))}")
+
+
+    print("---ERROR HANDLING---")
+    #check for error on fortran array
+    #   not absolutely sure this will not also catch the failcase on attempted read
+    findexlist=np.asfortranarray(indexlist)
+    try:
+        parserout = parse(findexlist, pxlen, stream)
+
+    except RuntimeError as e:
+        if "C-contiguous" in str(e):
+            print("Correctly identified non-C-contiguous array")
+            print(f"     Recieved error: {str(e)}")
+        else:
+            raise Exception(str(e))
+
+    print(indexlist[0:100,:].flags)
+
+    try:
+        parserout = parse(indexlist[0:100,:], pxlen, stream)
+
+    except RuntimeError as e:
+        if "shapes differ" in str(e):
+            print("Correctly identified shape mismatch")
+            print(f"     Recieved error: {str(e)}")
+        else:
+            raise Exception(str(e))
+
 
     print("---END---")
 

@@ -27,6 +27,26 @@ int const PXHEADERLEN = 16;
 int const NDIM = 3;
 std::string const VERSION = "0.0.1";
 
+
+struct EndianError : public std::exception {
+   const char * what () const throw () {
+      return "Incompatible system byte-order - must be little-endian";
+   }
+};
+
+struct ArrayContiguousError : public std::exception {
+   const char * what () const throw () {
+      return "Numpy array not C-contiguous";
+   }
+};
+
+struct ArrayShapeError : public std::exception {
+   const char * what () const throw () {
+      return "Input array shapes differ";
+   }
+};
+
+
 bool is_big_endian(void)
 /*
 checks endianness of system
@@ -47,7 +67,7 @@ checks system compatability
 {
     if ( is_big_endian() )
     {
-        throw std::runtime_error("is not compatible with big-endian system byte-order");
+        throw EndianError();
         //"v " + VERSION + 
     }
     else
@@ -58,14 +78,15 @@ checks system compatability
 
 #define C_CONTIGUOUS py::detail::npy_api::constants::NPY_ARRAY_C_CONTIGUOUS_
 
-bool check_nparray(const py::array nparray)
+bool check_ccontig(const py::array nparray)
 /*
 checks array compatability
+WARNNIG: might trigger on 1D array
 */
 {
 
     if (!(C_CONTIGUOUS == (nparray.flags() & C_CONTIGUOUS))) {
-        throw std::runtime_error("numpy array not C-contiguous");
+        throw ArrayContiguousError();
     }
     else
     {
@@ -78,16 +99,34 @@ checks array compatability
 
 }
 
+
 bool check_inputs(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens)
 /*
 check the inputs for compatability
 */
 {
     bool system = check_system();
-    bool np1 = check_nparray(indexlist);
-    bool np2 = check_nparray(pxlens);
+    bool np1 = check_ccontig(indexlist);
+    bool np2 = check_ccontig(pxlens);
+    bool shapes1 = false;
 
-    if (system && np1 && np2)
+    //array shapes
+    auto index_info = indexlist.request();
+    std::vector<ssize_t> index_shape = index_info.shape;
+
+    auto pxlens_info = pxlens.request();
+    std::vector<ssize_t> pxlens_shape = pxlens_info.shape;
+    
+    if (index_shape == pxlens_shape)
+    {
+        shapes1 = true;
+    }
+    else
+    {
+        throw ArrayShapeError();
+    }
+
+    if (system && np1 && np2 && shapes1)
     {
         return true;
     }
@@ -96,6 +135,7 @@ check the inputs for compatability
         return false;
     }
 }
+
 
 std::vector<uint16_t> readpixelcounts(const char* stream, const uint64_t streamlen) 
 /*
