@@ -18,3 +18,5 @@ build
 tmp
 datasets
 lib
+parsercore.egg-info
+parsercore
