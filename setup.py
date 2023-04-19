@@ -27,7 +27,7 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'parsercore_lib2',
+        'parsercore_lib',
         sources=['parsercore/parsercore.cpp'],
         include_dirs=[
             # Path to pybind11 headers
