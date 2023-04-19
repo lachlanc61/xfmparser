@@ -1,4 +1,5 @@
-import src.parsercore as parsercore
+#import src.parsercore as parsercore
+import parsercore
 #import src.explore as explore
 import numpy as np
 import sys
