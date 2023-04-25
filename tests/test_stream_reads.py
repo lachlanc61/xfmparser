@@ -1,6 +1,5 @@
 import pytest
 import sys, os
-import yaml
 import numpy as np
 
 TEST_DIR=os.path.realpath(os.path.dirname(__file__))
@@ -8,24 +7,17 @@ BASE_DIR=os.path.dirname(TEST_DIR)
 DATA_DIR_NAME="test_stream_reads"   #hardcoded for tests dependent on large datafiles
 DATA_DIR = os.path.join(TEST_DIR, DATA_DIR_NAME)  
 
-PACKAGE_CONFIG='xfmreadout/config.yaml'
-
 sys.path.append(BASE_DIR)
 
 import parsercore
-import xfmreadout.bufferops as bufferops
 import tests.utils_tests as ut
 
-#get config
-with open(os.path.join(BASE_DIR, PACKAGE_CONFIG), "r") as f:
-    config = yaml.safe_load(f)
-
 #assign constants from config
-PXHEADERLEN=config['PXHEADERLEN']
-CHARENCODE=config['CHARENCODE']
-NCHAN=config['NCHAN']
-BYTESPERCHAN=config['BYTESPERCHAN']
-MBCONV=config['MBCONV']
+PXHEADERLEN=16
+CHARENCODE='utf-8'
+NCHAN=4096
+BYTESPERCHAN=4
+MBCONV=1048576
 
 @pytest.mark.datafiles(
     os.path.join(DATA_DIR, 'ts2_submap_buffer.bin'),
