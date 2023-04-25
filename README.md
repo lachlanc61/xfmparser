@@ -5,7 +5,7 @@
 
 # About the project
 
-XFMParser is a C++/Python tool for parsing X-ray Flourescence Microscopy (XFM) hyperspectral maps, intended as a standalone component accompanying [ReadoutXFM](https://github.com/lachlanc61/ReadoutXFM). It is a C++ implementation of the core read operations from ReadoutXFM, offering greatly improved performance. 
+XFMParser is a C++/Python utility for X-ray Flourescence Microscopy (XFM) hyperspectral maps, intended as a standalone component for [ReadoutXFM](https://github.com/lachlanc61/ReadoutXFM), it is a C++ implementation of the core read operations, offering greatly improved performance. 
 
 XFMParser/ReadoutXFM are currently compatible with ATLAS-series spectrometers from IXRF Inc., and the GeoPIXE analysis package from CSIRO. 
 
