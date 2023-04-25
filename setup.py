@@ -1,7 +1,3 @@
-# adapted by Lachlan Casey, University of Queensland
-# based on: Christian Jaques, CBI group, Idiap, 2018
-# https://github.com/cjaques/pybind_examples
-
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import sys
@@ -40,8 +36,6 @@ ext_modules = [
 ]
 
 
-# As of Python 3.6, CCompiler has a `has_flag` method.
-# cf http://bugs.python.org/issue26689
 def has_flag(compiler, flagname):
     """Return a boolean indicating whether a flag name is supported on
     the specified compiler.
@@ -79,8 +73,6 @@ class BuildExt(build_ext):
     }
 
     if sys.platform == 'darwin':
-        # https://stackoverflow.com/questions/25595098/force-setup-py-to-use-my-custom-compiler
-        # solves the problem "invalid argument '-std=c++14' not allowed with 'C'" --> use clang++ instead of clang
         os.environ["CC"] = "clang++"
         os.environ["CXX"] = "clang++"
         c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
@@ -108,7 +100,7 @@ setup(
     description='C++ parser for XFM map CSIRO/IXRF format',
     long_description='',
     ext_modules=ext_modules,
-    install_requires=['pybind11==2.10.4', 'numpy==1.23.5'],
+    install_requires=['pybind11==2.10.4', 'numpy==1.23.5', 'pytest==7.3.1', 'pytest-datafiles==3.0.0'],
     cmdclass={'build_ext': BuildExt},
     zip_safe=False,
 )
