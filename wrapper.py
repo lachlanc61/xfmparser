@@ -64,6 +64,11 @@ def demo():
     print(f"result:     {parserout[0,0,140:160]}")
     #print(f"binary:   {stream[int(indexlist[0,0]+140):int(indexlist[0,0]+160)]}")
 
+    #not behaving as expected
+    #data is definitely little-endian because readoutxfm reads w/ struct(<H) correctly
+    #try to pull first 100 pairs using struct and compare to C++ reads
+
+
     print(f"DATA CORRECT: {np.all(np.isclose(parserout,data))}")
 
 
