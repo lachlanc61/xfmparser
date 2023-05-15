@@ -20,7 +20,7 @@ namespace py = pybind11;
 using std::cout;
 using std::endl;
 
-bool const DEBUG = false;
+bool const DEBUG = true;
 int const NCHAN = 4096;
 int const NDET = 2;
 int const PXHEADERLEN = 16;
@@ -137,13 +137,13 @@ check the inputs for compatability
 }
 
 
-std::vector<uint16_t> readpixelcounts(const char* stream, const uint64_t streamlen) 
+std::vector<uint16_t> readpixelcounts_system(const char* stream, const uint64_t streamlen) 
 /*
 reads pixeldata stream as:
     uint16(chan) uint16(counts)
 returns 1D numpy array of counts, w/ missing = 0
 
-WARNING: currently system MUST BE little-endian 
+WARNING: System MUST BE little-endian 
 */
 {
     //initialise result vector and pointers
@@ -179,6 +179,72 @@ WARNING: currently system MUST BE little-endian
     }
     return result_vector;
 }
+
+
+int16_t readLittleEndianInt16(const char* buffer)
+{
+    // Read the two bytes from the buffer
+    uint8_t byte0 = static_cast<uint8_t>(buffer[0]);
+    uint8_t byte1 = static_cast<uint8_t>(buffer[1]);
+    //cout << "byte0 " << unsigned(byte0) << " buffer0  " << buffer[0] << endl;
+    //cout << "byte1 " << unsigned(byte1) << " buffer1  " << buffer[1] << endl;
+
+    // Combine the bytes to form a 16-bit little-endian integer
+    int16_t result = (static_cast<int16_t>(byte0)) >> 8 | (static_cast<int16_t>(byte1) << 8);
+    //int16_t result = ( byte0 << 8 ) | (byte1);
+    //int16_t result = ( byte0 ) + (byte1 << 8);
+    if (DEBUG == true) 
+    {
+        cout << "b0 " << unsigned(byte0) << " b1 " << unsigned(byte1) << " R " << unsigned(result) << endl;
+    }
+    return result;
+}
+
+
+std::vector<uint16_t> readpixelcounts(const char* stream, const uint64_t streamlen) 
+/*
+reads pixeldata stream as:
+    uint16(chan) uint16(counts)
+returns 1D numpy array of counts, w/ missing = 0
+
+WARNING: currently system MUST BE little-endian 
+*/
+{
+    //initialise result vector and pointers
+    std::vector<uint16_t> result_vector(NCHAN, 0);
+
+    //zeroresult array
+    for (size_t i = 0; i < NCHAN; i++)
+    {
+        
+        result_vector[i]=0;
+    }
+
+    //setup conversion casts
+    auto voidPtr = static_cast<void const *>(stream);
+    //auto uintPtr = static_cast<uint16_t const *>(voidPtr);
+
+    uint64_t streamlen_tmp =400;
+    //fill result array from stream
+    uint16_t channel = NCHAN+1;    //init to value outside array JIC
+    for (size_t i = 0; i < streamlen_tmp / sizeof(uint16_t); ++i) {
+        if ( i % sizeof(uint16_t) == 0 )
+        { channel = readLittleEndianInt16(&stream[i]); }
+        else
+        { result_vector[channel] = readLittleEndianInt16(&stream[i]); }
+    }
+    if (DEBUG == true)
+    {
+        for (size_t i = 140; i < 160; i++)
+        {
+            cout << "inner " << i << "  " << result_vector[i] << endl;
+        }
+    
+        cout << "----BREAK----" << endl;
+    }
+    return result_vector;
+}
+
 
 
 py::array_t<uint16_t> readstream(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const char* stream, const int streamlen) 
@@ -229,6 +295,7 @@ WARNING: currently system MUST BE little-endian
 
     //loop through all indexed pixels 
     //  and read each into result array
+    nspectra = 1;
     for ( size_t i = 0; i < nspectra; i++ )    
     {
         if (DEBUG == true) { cout << "----INNER-" << i << "--" << endl; }

@@ -16,7 +16,7 @@ def parse( indexlist, pxlen, stream: bytes):
     """
 
     if BYTEORDER != sys.byteorder:
-        raise EnvironmentError("FATAL: System byteorder differs from data byteorder, C++ pixel extraction will fail")
+        raise EnvironmentError("System byteorder differs from data byteorder, C++ pixel extraction will fail")
 
     #if len(indexlist) != len(pxlen):
     #    raise ValueError("mismatch between index and pixel lengths")
@@ -28,7 +28,6 @@ def parse( indexlist, pxlen, stream: bytes):
     result = parsercore.readstream(indexlist, pxlen, stream, len(stream))
 
     return result
-
 
 
 
@@ -60,8 +59,10 @@ def demo():
     print("---READ IN DATA---")
     parserout = parse(indexlist, pxlen, stream)
 
-    print(f"expected:   {data[1000,0,140:160]}")
-    print(f"result:     {parserout[1000,0,140:160]}")
+    #pixel 1000
+    print(f"expected:   {data[0,0,140:160]}")
+    print(f"result:     {parserout[0,0,140:160]}")
+    #print(f"binary:   {stream[int(indexlist[0,0]+140):int(indexlist[0,0]+160)]}")
 
     print(f"DATA CORRECT: {np.all(np.isclose(parserout,data))}")
 

@@ -17,7 +17,7 @@ XFMParser performs parallel read operations on chunks of the binary IXRF/CSIRO "
 To set up, simply pip install the package from within your desired virtual environment:
 
 ```py
-pip install -r .
+pip install -e .
 ```
 
 
