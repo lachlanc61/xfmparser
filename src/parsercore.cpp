@@ -20,7 +20,7 @@ namespace py = pybind11;
 using std::cout;
 using std::endl;
 
-bool const DEBUG = false;
+bool const DEBUG = true;
 int const NCHAN = 4096;
 int const NDET = 2;
 int const PXHEADERLEN = 16;
@@ -181,7 +181,7 @@ WARNING: currently system MUST BE little-endian
 }
 
 
-py::array_t<uint16_t> readstream(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const py::bytes in_stream, const int streamlen) 
+py::array_t<uint16_t> readstream(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const py::bytes in_stream, const int streamlen, const int debug_int) 
 /*
 reads pixeldata stream as:
     uint16(chan) uint16(counts)
@@ -190,6 +190,11 @@ returns 1D numpy array of counts, w/ missing = 0
 WARNING: currently system MUST BE little-endian 
 */
 {
+    if (DEBUG == true)
+    {
+            std::cout << "inner " << debug_int << "  " << streamlen << std::endl;
+    }
+
     //check inputs and system for compatability
     bool accepted = check_inputs(indexlist, pxlens);
 
@@ -278,6 +283,6 @@ WARNING: currently system MUST BE little-endian
 /* Wrapping routines with PyBind */
 PYBIND11_MODULE(parsercore, m) {
 	    m.doc() = ""; // optional module docstring
-        m.def("readpixelcounts", &readpixelcounts, "readpixelcounts");        
-        m.def("readstream", &readstream, "readstream");   
+        m.def("readpixelcounts", &readpixelcounts, "pixel cound reader");        
+        m.def("readstream", &readstream, "primary stream reader");   
 }
