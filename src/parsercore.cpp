@@ -181,7 +181,7 @@ WARNING: currently system MUST BE little-endian
 }
 
 
-py::array_t<uint16_t> readstream(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const py::bytes in_stream, const int streamlen, const int debug_int) 
+py::array_t<uint16_t> readstream(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const py::bytes in_stream, const int streamlen) 
 /*
 reads pixeldata stream as:
     uint16(chan) uint16(counts)
@@ -192,7 +192,7 @@ WARNING: currently system MUST BE little-endian
 {
     if (DEBUG == true)
     {
-            std::cout << "inner " << debug_int << "  " << streamlen << std::endl;
+            std::cout << "DEBUG ON | streamlen:  " << streamlen << std::endl;
     }
 
     //check inputs and system for compatability
