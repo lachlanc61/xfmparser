@@ -20,7 +20,7 @@ namespace py = pybind11;
 using std::cout;
 using std::endl;
 
-bool const DEBUG = true;
+bool const DEBUG = false;
 int const NCHAN = 4096;
 int const NDET = 2;
 int const PXHEADERLEN = 16;
@@ -190,10 +190,6 @@ returns 1D numpy array of counts, w/ missing = 0
 WARNING: currently system MUST BE little-endian 
 */
 {
-    if (DEBUG == true)
-    {
-            std::cout << "DEBUG ON | streamlen:  " << streamlen << std::endl;
-    }
 
     //check inputs and system for compatability
     bool accepted = check_inputs(indexlist, pxlens);
@@ -246,6 +242,11 @@ WARNING: currently system MUST BE little-endian
 
         //read pixel
         working_result = readpixelcounts(substream, length);
+
+        if (i % 10000 == 0)
+            {
+                std::cout << "Iteration: " << i << "of " << nspectra << std::endl;
+            }
 
         if (DEBUG == true) 
         { 
