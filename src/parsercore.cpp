@@ -181,7 +181,7 @@ WARNING: currently system MUST BE little-endian
 }
 
 
-py::array_t<uint16_t> readstream(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const py::bytes in_stream, const int streamlen) 
+py::array_t<uint16_t> readstream(const py::array_t<uint64_t> indexlist, const py::array_t<uint16_t> pxlens, const py::bytes in_stream, const uint64_t streamlen) 
 /*
 reads pixeldata stream as:
     uint16(chan) uint16(counts)
