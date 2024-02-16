@@ -245,7 +245,7 @@ WARNING: currently system MUST BE little-endian
 
         if (i % 10000 == 0)
             {
-                std::cout << "Iteration: " << i << "of " << nspectra << std::endl;
+                std::cout << "Pixel: " << i << " of " << nspectra << std::endl;
             }
 
         if (DEBUG == true) 
