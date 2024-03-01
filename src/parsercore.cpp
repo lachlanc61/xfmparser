@@ -22,7 +22,7 @@ using std::endl;
 
 bool const DEBUG = false;
 int const NCHAN = 4096;
-int const NDET = 2;
+//int const NDET = 2;
 int const PXHEADERLEN = 16;
 int const NDIM = 3;
 std::string const VERSION = "0.0.1";
@@ -213,9 +213,11 @@ WARNING: currently system MUST BE little-endian
 
     size_t ndim;
     size_t npixels;
+    size_t ndet;
     if ( index_shape == pxlens_shape ) {
         ndim = index_shape.size(); 
         npixels = index_shape[0];
+        ndet = index_shape[1];
     }
     else  {
         throw std::runtime_error("indexes and pixel-length arrays are not the same shape");
@@ -223,11 +225,11 @@ WARNING: currently system MUST BE little-endian
     if (DEBUG == true) { cout << "----DIMS-" << npixels << "--" << endl; }
 
 
-    size_t npoints = npixels*NDET*NCHAN;
-    size_t nspectra = npixels*NDET;
+    size_t npoints = npixels*ndet*NCHAN;
+    size_t nspectra = npixels*ndet;
 
     //initialise result arrays
-    std::vector<uint16_t> full_result(npixels*NDET*NCHAN, 5);   //init to "5" so different to zeros produced by empty steam
+    std::vector<uint16_t> full_result(npixels*ndet*NCHAN, 5);   //init to "5" so different to zeros produced by empty steam
     std::vector<uint16_t> working_result;
 
     //loop through all indexed pixels 
@@ -245,7 +247,7 @@ WARNING: currently system MUST BE little-endian
 
         if (i % 10000 == 0)
             {
-                std::cout << "Pixel: " << i << " of " << nspectra << std::endl;
+                std::cout << "--Pixel: " << i << " of " << nspectra << std::endl;
             }
 
         if (DEBUG == true) 
@@ -265,7 +267,7 @@ WARNING: currently system MUST BE little-endian
     //init shape
     std::vector<ssize_t> result_shape(NDIM);
     result_shape[0] = npixels;
-    result_shape[1] = NDET;
+    result_shape[1] = ndet;
     result_shape[2] = NCHAN;
     std::vector<ssize_t> result_strides(NDIM);
     //init strides
